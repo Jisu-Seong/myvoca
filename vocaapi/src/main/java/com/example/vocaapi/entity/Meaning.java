@@ -11,7 +11,7 @@ public class Meaning {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long meno;
+    private Long meid;
 
     private String meanname;
 

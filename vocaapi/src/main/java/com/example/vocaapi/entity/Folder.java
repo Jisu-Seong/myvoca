@@ -18,11 +18,9 @@ public class Folder {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long fid;
 
-    @NonNull
     @CreationTimestamp
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @NonNull
     @UpdateTimestamp
     private LocalDateTime updatedAt = LocalDateTime.now();
 

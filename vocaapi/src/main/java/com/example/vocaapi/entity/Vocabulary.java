@@ -19,17 +19,14 @@ public class Vocabulary {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long vid;
 
-    @NonNull
     private String vocaname;
 
     @Column(columnDefinition = "boolean default false")
     private boolean isMarked;
 
-    @NonNull
     @CreationTimestamp
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @NonNull
     @UpdateTimestamp
     private LocalDateTime updatedAt = LocalDateTime.now();
 

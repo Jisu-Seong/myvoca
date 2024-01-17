@@ -10,7 +10,7 @@ import lombok.*;
 public class Example {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long eno;
+    private Long eid;
 
     private String sentence;
 
