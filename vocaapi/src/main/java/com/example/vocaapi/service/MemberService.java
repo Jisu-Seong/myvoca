@@ -3,11 +3,13 @@ package com.example.vocaapi.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.vocaapi.config.SecurityUtil;
 import com.example.vocaapi.dto.MemberResponseDTO;
 import com.example.vocaapi.entity.Member;
 import com.example.vocaapi.repository.MemberRepository;
+import com.example.vocaapi.util.ImageFileUtil;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +18,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional
 public class MemberService {
-	@Autowired
 	private final MemberRepository memberRepository;
-	@Autowired
 	private final PasswordEncoder passwordEncoder;
+	private final ImageFileUtil imageFileUtil;
 
 	public MemberResponseDTO getMyInfoBySecurity() {
 		return memberRepository.findById(SecurityUtil.getCurrentMemberId()).map(MemberResponseDTO::of)
@@ -39,6 +40,15 @@ public class MemberService {
 			throw new RuntimeException("비밀번호가 맞지 않습니다.");
 		}
 		member.setPassword(passwordEncoder.encode(newPassword));
+		return MemberResponseDTO.of(memberRepository.save(member));
+	}
+
+	public MemberResponseDTO changeMemberProfile(MultipartFile file) {
+		Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+				.orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다."));
+		Long mid = member.getMid();
+		String filename = imageFileUtil.saveImage(file);
+		member.setFilename(filename);
 		return MemberResponseDTO.of(memberRepository.save(member));
 	}
 
