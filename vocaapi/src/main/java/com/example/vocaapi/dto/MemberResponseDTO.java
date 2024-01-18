@@ -16,7 +16,6 @@ import lombok.ToString;
 public class MemberResponseDTO {
     private String email;
     private String nickname;
-    private MultipartFile multipartFile;
 
     public static MemberResponseDTO of(Member member) {
         return MemberResponseDTO.builder()

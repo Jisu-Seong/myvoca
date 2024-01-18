@@ -1,6 +1,9 @@
 package com.example.vocaapi.entity;
 
 import java.time.LocalDateTime;
+
+import com.example.vocaapi.dto.MemberRequestDTO;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,13 +21,8 @@ public class ProfileImgFile {
     @JoinColumn(name = "mid")
     private Member member;
 
-    private String orgFileName;
-
-    private String storedFileName;
-
-    private Long fileSize;
-
-    private LocalDateTime regDate;
+    private String fileName;
 
     private boolean delFlag;
+
 }

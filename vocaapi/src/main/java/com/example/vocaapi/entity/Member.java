@@ -34,10 +34,9 @@ public class Member {
     @UpdateTimestamp
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    @OneToOne
-    @JoinColumn(name = "pid")
-    public ProfileImgFile file;
+    public String filename;
 
     @OneToMany
     private List<Folder> folders;
+
 }
