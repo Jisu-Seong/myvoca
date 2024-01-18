@@ -2,7 +2,9 @@ package com.example.vocaapi.dto;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.example.vocaapi.entity.Authority;
 import com.example.vocaapi.entity.Member;
 
 import lombok.Getter;
@@ -16,6 +18,7 @@ public class MemberRequestDTO {
     private String email;
     private String password;
     private String nickname;
+    private MultipartFile multipartFile;
 
     public Member toMember(PasswordEncoder passwordEncoder) {
         return Member.builder()

@@ -34,10 +34,10 @@ public class Vocabulary {
     @JoinColumn(name = "fid")
     private Folder folder;
 
-    @OneToMany(mappedBy = "meaning")
+    @OneToMany
     private List<Meaning> meanings;
 
-    @OneToMany(mappedBy = "example")
+    @OneToMany
     private List<Example> examples;
 
 }

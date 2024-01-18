@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,14 +25,19 @@ public class Member {
 
     private String nickname;
 
+    @Enumerated(EnumType.STRING)
+    private Authority authority;
+
     @CreationTimestamp
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @UpdateTimestamp
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    public MultipartFile MultipartFile;
+    @OneToOne
+    @JoinColumn(name = "pid")
+    public ProfileImgFile file;
 
-    @OneToMany(mappedBy = "folder")
+    @OneToMany
     private List<Folder> folders;
 }

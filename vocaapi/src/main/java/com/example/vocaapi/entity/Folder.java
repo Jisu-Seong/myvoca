@@ -28,6 +28,6 @@ public class Folder {
     @JoinColumn(name = "mid")
     private Member member;
 
-    @OneToMany(mappedBy = "folder")
+    @OneToMany
     private List<Vocabulary> vocabularies;
 }
