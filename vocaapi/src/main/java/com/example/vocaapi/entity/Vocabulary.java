@@ -30,6 +30,8 @@ public class Vocabulary {
     @UpdateTimestamp
     private LocalDateTime updatedAt = LocalDateTime.now();
 
+    private boolean delFlag;
+
     @ManyToOne
     @JoinColumn(name = "fid")
     private Folder folder;

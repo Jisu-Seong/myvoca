@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.vocaapi.dto.ChangePasswordRequestDTO;
 import com.example.vocaapi.dto.MemberRequestDTO;
@@ -39,6 +40,11 @@ public class MemberController {
     @PostMapping("/password")
     public ResponseEntity<MemberResponseDTO> setMemberPassword(@RequestBody ChangePasswordRequestDTO request) {
         return ResponseEntity.ok(memberService.changeMemberPassword(request.getExPassword(), request.getNewPassword()));
+    }
+
+    @PostMapping("/profile")
+    public ResponseEntity<MemberResponseDTO> setMemberProfileImg(@RequestBody MultipartFile multipartFile) {
+        return ResponseEntity.ok(memberService.changeMemberProfile(multipartFile));
     }
 
 }

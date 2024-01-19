@@ -18,11 +18,15 @@ public class Folder {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long fid;
 
+    private String foldername;
+
     @CreationTimestamp
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @UpdateTimestamp
     private LocalDateTime updatedAt = LocalDateTime.now();
+
+    private boolean delFlag;
 
     @ManyToOne
     @JoinColumn(name = "mid")

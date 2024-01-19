@@ -73,7 +73,7 @@ public class ImageFileUtil {
     }
 
     public String saveImage(MultipartFile file) {
-        if (file == null) {
+        if (file == null || file.getOriginalFilename().length() == 0) {
             return null;
         }
         String savedName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
