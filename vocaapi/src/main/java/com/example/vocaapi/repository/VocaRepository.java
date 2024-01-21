@@ -14,7 +14,7 @@ import com.example.vocaapi.entity.Vocabulary;
 @Repository
 public interface VocaRepository extends JpaRepository<Vocabulary, Long> {
 
-    @Query(value = "select v from vocabulary v join fetch folder f on v.fid = f.fid")
+    @Query(value = "select v, f from vocabulary v join fetch folder f on v.fid = f.fid", nativeQuery = true)
     Page<Vocabulary> findVocaPageListByFolder(Folder folder, Pageable pageable);
 
     Optional<Vocabulary> findByVid(Long vid);

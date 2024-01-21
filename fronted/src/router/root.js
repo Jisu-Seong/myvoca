@@ -2,14 +2,14 @@ import { Suspense, lazy } from "react";
 import { createBrowserRouter } from "react-router-dom";
 
 const Loading = <div>Loading...</div>;
-const Main = lazy(() => import("../pages/MainPage"));
+const Voca = lazy(() => import("../pages/VocaPage"));
 
 const root = createBrowserRouter([
   {
     path: "",
     element: (
       <Suspense fallback={Loading}>
-        <Main />
+        <Voca />
       </Suspense>
     ),
   },

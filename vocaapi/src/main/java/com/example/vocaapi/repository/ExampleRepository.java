@@ -12,6 +12,6 @@ import com.example.vocaapi.entity.Vocabulary;
 @Repository
 public interface ExampleRepository extends JpaRepository<Example, Long> {
 
-    @Query(value = "select e from example e join fetch vocabulary v on e.vid = v.vid")
+    @Query(value = "select e from example e join fetch vocabulary v on e.vid = v.vid", nativeQuery = true)
     List<Example> findByVocabulary(Vocabulary vocabulary);
 }
