@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.vocaapi.dto.MemberRequestDto;
+import com.example.vocaapi.dto.MemberRequestDTO;
 import com.example.vocaapi.dto.MemberResponseDto;
-import com.example.vocaapi.dto.TokenDto;
+import com.example.vocaapi.dto.TokenDTO;
 import com.example.vocaapi.service.AuthService;
 
 import lombok.RequiredArgsConstructor;
@@ -22,12 +22,12 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<MemberResponseDto> signup(@RequestBody MemberRequestDto requestDto) {
+    public ResponseEntity<MemberResponseDto> signup(@RequestBody MemberRequestDTO requestDto) {
         return ResponseEntity.ok(authService.signup(requestDto));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenDto> login(@RequestBody MemberRequestDto requestDto) {
+    public ResponseEntity<TokenDTO> login(@RequestBody MemberRequestDTO requestDto) {
         return ResponseEntity.ok(authService.login(requestDto));
     }
 }

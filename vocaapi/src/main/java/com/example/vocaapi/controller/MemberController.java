@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.vocaapi.dto.ChangePasswordRequestDto;
-import com.example.vocaapi.dto.MemberRequestDto;
+import com.example.vocaapi.dto.MemberRequestDTO;
 import com.example.vocaapi.dto.MemberResponseDto;
 import com.example.vocaapi.service.MemberService;
 
@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/member")
+@RequestMapping("/api/member")
 public class MemberController {
 
     @Autowired
@@ -32,7 +32,7 @@ public class MemberController {
     }
 
     @PostMapping("/nickname")
-    public ResponseEntity<MemberResponseDto> setMemberNickname(@RequestBody MemberRequestDto request) {
+    public ResponseEntity<MemberResponseDto> setMemberNickname(@RequestBody MemberRequestDTO request) {
         return ResponseEntity.ok(memberService.changeMemberNickname(request.getEmail(), request.getNickname()));
     }
 

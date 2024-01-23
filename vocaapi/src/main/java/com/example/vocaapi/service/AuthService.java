@@ -7,9 +7,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.example.vocaapi.dto.MemberRequestDto;
+import com.example.vocaapi.dto.MemberRequestDTO;
 import com.example.vocaapi.dto.MemberResponseDto;
-import com.example.vocaapi.dto.TokenDto;
+import com.example.vocaapi.dto.TokenDTO;
 import com.example.vocaapi.entity.Member;
 import com.example.vocaapi.jwt.TokenProvider;
 import com.example.vocaapi.repository.MemberRepository;
@@ -30,7 +30,7 @@ public class AuthService {
     @Autowired
     private final TokenProvider tokenProvider;
 
-    public MemberResponseDto signup(MemberRequestDto requestDto) {
+    public MemberResponseDto signup(MemberRequestDTO requestDto) {
         if (memberRepository.existsByEmail(requestDto.getEmail())) {
             throw new RuntimeException("이미 가입되어 있는 유저입니다");
         }
@@ -39,7 +39,7 @@ public class AuthService {
         return MemberResponseDto.of(memberRepository.save(member));
     }
 
-    public TokenDto login(MemberRequestDto requestDto) {
+    public TokenDTO login(MemberRequestDTO requestDto) {
         UsernamePasswordAuthenticationToken authenticationToken = requestDto.toAuthentication();
 
         Authentication authentication = managerBuilder.getObject().authenticate(authenticationToken);

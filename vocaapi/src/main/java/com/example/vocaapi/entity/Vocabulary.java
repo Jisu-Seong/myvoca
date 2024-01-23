@@ -43,4 +43,11 @@ public class Vocabulary {
     @OneToMany(mappedBy = "vocabulary", cascade = CascadeType.REMOVE)
     private List<Example> examples;
 
+    public void changeVocaname(String vocaname) {
+        this.vocaname = vocaname;
+    }
+
+    public void changeMark(boolean isMarked) {
+        this.isMarked = isMarked;
+    }
 }

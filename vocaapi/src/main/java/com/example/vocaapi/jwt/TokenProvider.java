@@ -15,7 +15,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import com.example.vocaapi.dto.TokenDto;
+import com.example.vocaapi.dto.TokenDTO;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -42,24 +42,20 @@ public class TokenProvider {
 		this.key = Keys.hmacShaKeyFor(keyBytes);
 	}
 
-	public TokenDto generateTokenDto(Authentication authentication) {
+	public TokenDTO generateTokenDto(Authentication authentication) {
 		String authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority)
 				.collect(Collectors.joining(","));
 
 		long now = (new Date()).getTime();
 
 		Date tokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
-		Date tokenExpiresIn2 = new Date(now + REFRESH_TIME);
 
 		System.out.println(tokenExpiresIn);
 
 		String accessToken = Jwts.builder().setSubject(authentication.getName()).claim(AUTHORITIES_KEY, authorities)
 				.setExpiration(tokenExpiresIn).signWith(key, SignatureAlgorithm.HS512).compact();
 
-		String refreshToken = Jwts.builder().setSubject(authentication.getName()).claim(AUTHORITIES_KEY, authorities)
-				.setExpiration(tokenExpiresIn2).signWith(key, SignatureAlgorithm.HS512).compact();
-
-		return TokenDto.builder().grantType(BEARER_TYPE).accessToken(accessToken).refreshToken(refreshToken)
+		return TokenDTO.builder().grantType(BEARER_TYPE).accessToken(accessToken)
 				.tokenExpiresIn(tokenExpiresIn.getTime()).build();
 	}
 
