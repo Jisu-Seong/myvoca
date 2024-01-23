@@ -35,10 +35,11 @@ public class VocaController {
         return vocaService.get(vid);
     }
 
-    // @PostMapping("/")
-    // public Map<String, Long> register(@RequestBody VocaRequestDTO vocaRequestDTO)
-    // {
+    @PostMapping("/")
+    public Map<String, Long> register(@RequestBody VocaRequestDTO vocaRequestDTO) {
+        Long vid = vocaService.createVoca(vocaRequestDTO).getVid();
+        return Map.of("VID", vid);
 
-    // }
+    }
 
 }

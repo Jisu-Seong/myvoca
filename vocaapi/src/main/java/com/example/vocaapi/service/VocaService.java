@@ -31,12 +31,12 @@ public class VocaService {
         private final FolderRepository folderRepository;
         private final VocaRepository vocaRepository;
 
-        public VocaResponseDTO createVoca(Long fid, String vocaname, boolean isMarked) {
-                Folder folder = folderRepository.getReferenceById(fid);
+        public VocaResponseDTO createVoca(VocaRequestDTO vocaRequestDTO) {
+                Folder folder = folderRepository.getReferenceById(vocaRequestDTO.getFid());
                 Vocabulary vocabulary = Vocabulary.builder()
                                 .folder(folder)
-                                .vocaname(vocaname)
-                                .isMarked(isMarked)
+                                .vocaname(vocaRequestDTO.getVocaname())
+                                .isMarked(vocaRequestDTO.isMarked())
                                 .build();
                 return VocaResponseDTO.of(vocaRepository.save(vocabulary));
         }
