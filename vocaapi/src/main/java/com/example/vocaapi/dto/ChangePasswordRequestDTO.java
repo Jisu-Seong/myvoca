@@ -1,14 +1,14 @@
 package com.example.vocaapi.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Setter
-@ToString
-public class ChangePasswordRequestDTO {
-    private String email;
-    private String exPassword;
-    private String newPassword;
+@AllArgsConstructor
+@NoArgsConstructor
+public class ChangePasswordRequestDto {
+	private String email;
+	private String exPassword;
+	private String newPassword;
 }

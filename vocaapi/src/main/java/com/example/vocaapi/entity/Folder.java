@@ -13,6 +13,7 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Folder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,6 +33,6 @@ public class Folder {
     @JoinColumn(name = "mid")
     private Member member;
 
-    @OneToMany
+    @OneToMany(mappedBy = "folder", cascade = CascadeType.REMOVE)
     private List<Vocabulary> vocabularies;
 }

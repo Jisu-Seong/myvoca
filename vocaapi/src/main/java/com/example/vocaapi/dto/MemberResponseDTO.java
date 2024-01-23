@@ -1,26 +1,24 @@
 package com.example.vocaapi.dto;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import com.example.vocaapi.entity.Member;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Setter
-@ToString
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class MemberResponseDTO {
-    private String email;
-    private String nickname;
+public class MemberResponseDto {
+	private String email;
+	private String nickname;
 
-    public static MemberResponseDTO of(Member member) {
-        return MemberResponseDTO.builder()
-                .email(member.getEmail())
-                .nickname(member.getNickname())
-                .build();
-    }
+	public static MemberResponseDto of(Member member) {
+		return MemberResponseDto.builder()
+				.email(member.getEmail())
+				.nickname(member.getNickname())
+				.build();
+	}
 }

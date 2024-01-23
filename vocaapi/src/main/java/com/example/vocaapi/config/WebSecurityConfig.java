@@ -48,7 +48,7 @@ public class WebSecurityConfig {
 
 				.and()
 				.authorizeRequests()
-				.requestMatchers("/auth/**").permitAll()
+				.requestMatchers("POST", "/api/auth/*").permitAll()
 				.anyRequest().authenticated()
 
 				.and()

@@ -13,6 +13,7 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Vocabulary {
 
     @Id
@@ -36,10 +37,10 @@ public class Vocabulary {
     @JoinColumn(name = "fid")
     private Folder folder;
 
-    @OneToMany
+    @OneToMany(mappedBy = "vocabulary", cascade = CascadeType.REMOVE)
     private List<Meaning> meanings;
 
-    @OneToMany
+    @OneToMany(mappedBy = "vocabulary", cascade = CascadeType.REMOVE)
     private List<Example> examples;
 
 }

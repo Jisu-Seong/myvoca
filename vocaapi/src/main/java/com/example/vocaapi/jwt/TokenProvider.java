@@ -33,7 +33,8 @@ public class TokenProvider {
 	private static final String AUTHORITIES_KEY = "auth";
 
 	private static final String BEARER_TYPE = "bearer";
-	private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30;
+	private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 10;
+	private static final long REFRESH_TIME = 1000 * 60 * 30;
 	private final Key key;
 
 	public TokenProvider(@Value("${jwt.secret.key}") String secretKey) {
@@ -48,13 +49,17 @@ public class TokenProvider {
 		long now = (new Date()).getTime();
 
 		Date tokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
+		Date tokenExpiresIn2 = new Date(now + REFRESH_TIME);
 
 		System.out.println(tokenExpiresIn);
 
 		String accessToken = Jwts.builder().setSubject(authentication.getName()).claim(AUTHORITIES_KEY, authorities)
 				.setExpiration(tokenExpiresIn).signWith(key, SignatureAlgorithm.HS512).compact();
 
-		return TokenDto.builder().grantType(BEARER_TYPE).accessToken(accessToken)
+		String refreshToken = Jwts.builder().setSubject(authentication.getName()).claim(AUTHORITIES_KEY, authorities)
+				.setExpiration(tokenExpiresIn2).signWith(key, SignatureAlgorithm.HS512).compact();
+
+		return TokenDto.builder().grantType(BEARER_TYPE).accessToken(accessToken).refreshToken(refreshToken)
 				.tokenExpiresIn(tokenExpiresIn.getTime()).build();
 	}
 

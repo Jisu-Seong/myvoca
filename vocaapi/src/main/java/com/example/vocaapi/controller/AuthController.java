@@ -7,27 +7,27 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.vocaapi.dto.MemberRequestDTO;
-import com.example.vocaapi.dto.MemberResponseDTO;
+import com.example.vocaapi.dto.MemberRequestDto;
+import com.example.vocaapi.dto.MemberResponseDto;
 import com.example.vocaapi.dto.TokenDto;
 import com.example.vocaapi.service.AuthService;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
     @Autowired
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<MemberResponseDTO> signup(@RequestBody MemberRequestDTO requestDto) {
+    public ResponseEntity<MemberResponseDto> signup(@RequestBody MemberRequestDto requestDto) {
         return ResponseEntity.ok(authService.signup(requestDto));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenDto> login(@RequestBody MemberRequestDTO requestDto) {
+    public ResponseEntity<TokenDto> login(@RequestBody MemberRequestDto requestDto) {
         return ResponseEntity.ok(authService.login(requestDto));
     }
 }

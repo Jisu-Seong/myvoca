@@ -7,11 +7,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
-import com.example.vocaapi.dto.ChangePasswordRequestDTO;
-import com.example.vocaapi.dto.MemberRequestDTO;
-import com.example.vocaapi.dto.MemberResponseDTO;
+import com.example.vocaapi.dto.ChangePasswordRequestDto;
+import com.example.vocaapi.dto.MemberRequestDto;
+import com.example.vocaapi.dto.MemberResponseDto;
 import com.example.vocaapi.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
@@ -25,26 +24,21 @@ public class MemberController {
     private final MemberService memberService;
 
     @GetMapping("/me")
-    public ResponseEntity<MemberResponseDTO> getMyMemberInfo() {
-        MemberResponseDTO myInfoBySecurity = memberService.getMyInfoBySecurity();
+    public ResponseEntity<MemberResponseDto> getMyMemberInfo() {
+        MemberResponseDto myInfoBySecurity = memberService.getMyInfoBySecurity();
         System.out.println(myInfoBySecurity.getNickname());
         return ResponseEntity.ok((myInfoBySecurity));
         // return ResponseEntity.ok(memberService.getMyInfoBySecurity());
     }
 
     @PostMapping("/nickname")
-    public ResponseEntity<MemberResponseDTO> setMemberNickname(@RequestBody MemberRequestDTO request) {
+    public ResponseEntity<MemberResponseDto> setMemberNickname(@RequestBody MemberRequestDto request) {
         return ResponseEntity.ok(memberService.changeMemberNickname(request.getEmail(), request.getNickname()));
     }
 
     @PostMapping("/password")
-    public ResponseEntity<MemberResponseDTO> setMemberPassword(@RequestBody ChangePasswordRequestDTO request) {
+    public ResponseEntity<MemberResponseDto> setMemberPassword(@RequestBody ChangePasswordRequestDto request) {
         return ResponseEntity.ok(memberService.changeMemberPassword(request.getExPassword(), request.getNewPassword()));
-    }
-
-    @PostMapping("/profile")
-    public ResponseEntity<MemberResponseDTO> setMemberProfileImg(@RequestBody MultipartFile multipartFile) {
-        return ResponseEntity.ok(memberService.changeMemberProfile(multipartFile));
     }
 
 }

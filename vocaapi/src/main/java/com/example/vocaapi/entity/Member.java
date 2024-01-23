@@ -6,8 +6,19 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
@@ -15,28 +26,32 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class Member {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long mid;
 
-    private String email;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long mid;
 
-    private String password;
+	@Column
+	private String password;
 
-    private String nickname;
+	@Column
+	private String nickname;
 
-    @Enumerated(EnumType.STRING)
-    private Authority authority;
+	@Column
+	private String email;
 
-    @CreationTimestamp
-    private LocalDateTime createdAt = LocalDateTime.now();
+	@Column
+	@Enumerated(EnumType.STRING)
+	private Authority authority;
 
-    @UpdateTimestamp
-    private LocalDateTime updatedAt = LocalDateTime.now();
+	@CreationTimestamp
+	private LocalDateTime createdAt = LocalDateTime.now();
 
-    public String filename;
+	@UpdateTimestamp
+	private LocalDateTime updatedAt = LocalDateTime.now();
 
-    @OneToMany
-    private List<Folder> folders;
+	public String filename;
 
+	@OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
+	private List<Folder> folders;
 }
