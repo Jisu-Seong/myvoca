@@ -37,11 +37,9 @@ public class Vocabulary {
     @JoinColumn(name = "fid")
     private Folder folder;
 
-    @OneToMany(mappedBy = "vocabulary", cascade = CascadeType.REMOVE)
-    private List<Meaning> meanings;
+    private String meaning;
 
-    @OneToMany(mappedBy = "vocabulary", cascade = CascadeType.REMOVE)
-    private List<Example> examples;
+    private String sentence;
 
     public void changeVocaname(String vocaname) {
         this.vocaname = vocaname;
@@ -49,5 +47,13 @@ public class Vocabulary {
 
     public void changeMark(boolean isMarked) {
         this.isMarked = isMarked;
+    }
+
+    public void changeMeanings(String meaning) {
+        this.meaning = meaning;
+    }
+
+    public void changeSentence(String sentence) {
+        this.sentence = sentence;
     }
 }
