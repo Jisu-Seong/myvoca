@@ -16,6 +16,8 @@ public class VocaResponseDTO {
     private boolean isMarked;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String meaning;
+    private String sentence;
 
     public static VocaResponseDTO of(Vocabulary vocabulary) {
         return VocaResponseDTO.builder()
@@ -24,6 +26,8 @@ public class VocaResponseDTO {
                 .isMarked(vocabulary.isMarked())
                 .createdAt(vocabulary.getCreatedAt())
                 .updatedAt(vocabulary.getUpdatedAt())
+                .meaning(vocabulary.getMeaning())
+                .sentence(vocabulary.getSentence())
                 .build();
     }
 
