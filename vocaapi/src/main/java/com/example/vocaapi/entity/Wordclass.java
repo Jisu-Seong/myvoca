@@ -22,4 +22,8 @@ public class Wordclass {
     @OneToMany(mappedBy = "wordclass")
     @ToString.Exclude
     private Set<VocaAndClass> vocabularies = new HashSet<>();
+
+    public Wordclass(String classname) {
+        this.classname = classname;
+    }
 }

@@ -21,4 +21,17 @@ public class VocaAndClass {
     @ManyToOne
     @JoinColumn(name = "wid")
     private Wordclass wordclass;
+
+    public VocaAndClass(Vocabulary v, Wordclass w) {
+        this.vocabulary = v;
+        this.wordclass = w;
+    }
+
+    public void changeVoca(Vocabulary v) {
+        this.vocabulary = v;
+    }
+
+    public void changeWordClass(Wordclass w) {
+        this.wordclass = w;
+    }
 }
