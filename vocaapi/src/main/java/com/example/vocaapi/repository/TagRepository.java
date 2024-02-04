@@ -7,17 +7,17 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.example.vocaapi.entity.Wordclass;
+import com.example.vocaapi.entity.Tag;
 
 @Repository
-public interface WordclassRepository extends JpaRepository<Wordclass, Long> {
+public interface TagRepository extends JpaRepository<Tag, Long> {
 
     // 한 단어의 모든 태그 리스트(쿼리?)를 구하기 위한
     // 하나의 wordclass 찾기
-    Optional<Wordclass> findByWid(Long wid);
+    Optional<Tag> findByTid(Long tid);
 
     // 클래스 이름에 대하여 존재하는지 찾기
-    @Query(value = "select * from wordclass where classname = :classname", nativeQuery = true)
-    Optional<Wordclass> findByClassname(String classname);
+    @Query(value = "select * from tag where tagname = :tagname", nativeQuery = true)
+    Optional<Tag> findByTagname(String tagname);
 
 }

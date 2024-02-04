@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -16,16 +17,19 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.vocaapi.config.SecurityUtil;
+import com.example.vocaapi.dto.VocaRequestDTO;
 import com.example.vocaapi.dto.VocaResponseDTO;
-import com.example.vocaapi.dto.form.VocaFormDTO;
 import com.example.vocaapi.entity.Folder;
-import com.example.vocaapi.entity.VocaAndClass;
+import com.example.vocaapi.entity.Member;
+import com.example.vocaapi.entity.Relation;
 import com.example.vocaapi.entity.Vocabulary;
-import com.example.vocaapi.entity.Wordclass;
+import com.example.vocaapi.entity.Tag;
 import com.example.vocaapi.repository.FolderRepository;
-import com.example.vocaapi.repository.VocaAndClassRepository;
+import com.example.vocaapi.repository.MemberRepository;
+import com.example.vocaapi.repository.RelationRepository;
 import com.example.vocaapi.repository.VocaRepository;
-import com.example.vocaapi.repository.WordclassRepository;
+import com.example.vocaapi.repository.TagRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -35,169 +39,132 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @RequiredArgsConstructor
 public class VocaService {
+        private final MemberRepository memberRepository;
         private final FolderRepository folderRepository;
         private final VocaRepository vRepository;
-        private final VocaAndClassRepository vcRepository;
-        private final WordclassRepository wRepository;
+        private final RelationRepository rRepository;
+        private final TagRepository tRepository;
 
-        // 폴더당 보카 리스트 o
+        // 폴더당 보카 리스트 수정요
         public List<VocaResponseDTO> getVocaList(Long fid) {
-                List<Vocabulary> list = vRepository.findVocaPageListByFid(fid);
-                return list.stream().map(voca -> VocaResponseDTO.of(voca)).collect(Collectors.toList());
+
+                Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+                                .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다."));
+                List<Folder> fList = folderRepository.findByMember(member.getMid());
+
+                Optional<Folder> folder = folderRepository.findByFid(fid);
+
+                if (folder != null && fList != null && fList.size() != 0) {
+                        List<Vocabulary> vList = vRepository.findVocaPageListByFid(fid);
+                        return vList.stream().map(voca -> VocaResponseDTO.of(voca)).collect(Collectors.toList());
+
+                } else {
+                        return null;
+                }
+
         }
 
         // 보카 상세 o
         public VocaResponseDTO getOneVoca(Long vid) {
-                return VocaResponseDTO.of(vRepository.getReferenceById(vid));
+                Optional<Vocabulary> result = vRepository.findByVid(vid);
+                return VocaResponseDTO.of(result.orElseThrow());
         }
 
-        // 보카 삭제 o,
-        // 관계도 삭제
+        // 보카 삭제 o
         public void deleteVoca(Long vid) {
-                // 한 보카당 여러 관계일 경우 관계 다삭제
-
                 vRepository.deleteById(vid);
-
         }
 
         // 보카 편집
-        // 클래스도 경우에 따라 추가/삭제, 그에 따라 관계도 추가/삭제
-        public void modifyVoca(Long vid, VocaFormDTO vocaFormDTO) {
-                Vocabulary vocabulary = vRepository.getReferenceById(vid);
-                vocabulary.changeVocaname(vocaFormDTO.getVocaname());
-                vocabulary.changeMark(vocaFormDTO.isMarked());
-                vocabulary.changeMeanings(vocaFormDTO.getMeaning());
-                vocabulary.changeSentence(vocaFormDTO.getSentence());
-                vocabulary.changeUpdateAt();
-                vRepository.save(vocabulary);
-
-                Set<String> after = vocaFormDTO.getClasses();
-                Set<String> before = new HashSet<>();
-
-                List<Long> beforeLong = vcRepository.findRelationByVid(vid).stream().map(x -> x.getWordclass().getWid())
-                                .collect(Collectors.toList());
-
-                for (Long elem : beforeLong) {
-                        Optional<Wordclass> x = wRepository.findById(elem);
-                        if (x != null) {
-                                Wordclass y = x.orElseThrow();
-                                before.add(y.getClassname());
-                        }
-                }
-                Set<String> temp1 = after.stream().collect(Collectors.toSet());
-                Set<String> temp2 = before.stream().collect(Collectors.toSet());
-
-                after.removeAll(temp2);
-                before.removeAll(temp1);
-
-                List<String> aList = new ArrayList<>(after); // 클래스 확인 후 추가, 관계 추가
-                List<String> bList = new ArrayList<>(before); // 관계 삭제
-                List<VocaAndClass> vcList = vcRepository.findRelationByVid(vid);
-                if (vcList != null && vcList.size() != 0) {
-                        for (int i = 0; i < vcList.size(); i++) {
-                                String str = vcList.get(i).getWordclass().getClassname();
-                                if (!aList.contains(str)) {
-                                        addRelation(new VocaAndClass(vocabulary, registWordclass(str)));
-                                }
-                                if (bList.contains(str)) {
-                                        deleteRelation(vcList.get(i));
-                                }
-                        }
-                }
+        public void modifyVoca(Long vid, VocaRequestDTO vocaRequestDTO) {
+                Optional<Vocabulary> result = vRepository.findByVid(vid);
+                Vocabulary v = result.orElseThrow();
+                v.changeVocaname(vocaRequestDTO.getVocaname());
+                v.changeMeanings(vocaRequestDTO.getMeaning());
+                v.changeSentence(vocaRequestDTO.getSentence());
+                v.changeMark(vocaRequestDTO.isMarked());
+                v.changeUpdateAt();
 
         }
 
         // 보카 추가
-        public Long addVoca(Long fid, VocaFormDTO vocaFormDTO) {
-                Vocabulary vocabulary = Vocabulary.builder()
-                                .folder(folderRepository.getReferenceById(fid))
-                                .vocaname(vocaFormDTO.getVocaname())
-                                .isMarked(vocaFormDTO.isMarked())
-                                .meaning(vocaFormDTO.getMeaning())
-                                .sentence(vocaFormDTO.getSentence())
+        public VocaResponseDTO addVoca(Long fid, VocaRequestDTO vocaRequestDTO) {
+                Folder folder = folderRepository.getReferenceById(fid);
+                Vocabulary voca = Vocabulary.builder()
+                                .folder(folder)
+                                .vocaname(vocaRequestDTO.getVocaname())
+                                .meaning(vocaRequestDTO.getMeaning())
+                                .sentence(vocaRequestDTO.getSentence())
+                                .isMarked(vocaRequestDTO.isMarked())
                                 .build();
-                vRepository.save(vocabulary).getVid();
-
-                Set<String> set = vocaFormDTO.getClasses();
-                List<String> list = new ArrayList<>(set);
-                for (int i = 0; i < list.size(); i++) {
-                        Optional<Wordclass> w1 = getWordclass(list.get(i));
-                        if (w1 == null) {
-                                Wordclass w = registWordclass(list.get(i));
-                                addRelation(new VocaAndClass(vocabulary, w));
-                        } else {
-                                Wordclass w2 = w1.orElseThrow();
-                                addRelation(new VocaAndClass(vocabulary, w2));
-                        }
-                }
-                return vocabulary.getVid();
-
+                return VocaResponseDTO.of(vRepository.save(voca));
         }
 
-        // 한 클래스에 해당하는 모든 보카 조회
-        public List<VocaResponseDTO> getVocaListByClass(String classname) {
-                Wordclass wordclass = wRepository.findByClassname(classname).orElseThrow();
-                Long wid = wordclass.getWid();
-                List<VocaAndClass> vcList = vcRepository.findRelationByWid(wid);
-                List<Long> lList = vcList.stream().map(x -> x.getVocabulary().getVid()).collect(Collectors.toList());
-                List<Vocabulary> vList = new ArrayList<>();
-                for (Long elem : lList) {
-                        vList.add(vRepository.getReferenceById(elem));
-                }
-                Iterator<Vocabulary> iter = vList.iterator();
-                while (iter.hasNext()) {
-                        if (iter.next() == null) {
-                                iter.remove();
-                        }
-                }
-                return vList.stream().map(x -> VocaResponseDTO.of(x)).collect(Collectors.toList());
+        // 한 태그에 해당하는 모든 보카 조회
 
-        }
+        // 한 단어에 해당되는 모든 태그 조회
+        public List<String> findAllTagsByVoca(Long vid) {
+                Vocabulary v = vRepository.getReferenceById(vid);
+                List<Relation> list = rRepository.findRelationByVid(v.getVid());
+                if (list != null && list.size() != 0) {
+                        return list.stream().map(x -> x.getTag().getTagname()).collect(Collectors.toList());
+                } else {
+                        return null;
+                }
 
-        // 한 단어에 해당되는 모든 클래스 조회
-        public List<String> getWCNameByOneVoca(Long vid) {
-                List<VocaAndClass> vcList = vcRepository.findRelationByVid(vid);
-                List<Long> lList = vcList.stream().map(x -> x.getWordclass().getWid()).collect(Collectors.toList());
-                List<Wordclass> wList = new ArrayList<>();
-                for (Long elem : lList) {
-                        wList.add(wRepository.getReferenceById(elem));
-                }
-                Iterator<Wordclass> iter = wList.iterator();
-                while (iter.hasNext()) {
-                        if (iter.next() == null) {
-                                iter.remove();
-                        }
-                }
-                return wList.stream().map(x -> x.getClassname()).collect(Collectors.toList());
         }
 
         // 관계 추가
-        public void addRelation(VocaAndClass vc) {
-                vcRepository.save(vc);
+        public void addRelation(Long vid, List<String> tags) {
+                Vocabulary v = vRepository.getReferenceById(vid);
+                for (String tag : tags) {
+                        Optional<Tag> result = tRepository.findByTagname(tag);
+                        if (result != null) {
+                                Tag t = result.orElseThrow();
+                                rRepository.save(new Relation(v, t));
+                        }
+                }
+
         }
 
         // 관계 삭제
-        public void deleteRelation(VocaAndClass vc) {
-                vc.changeVoca(null);
-                vc.changeWordClass(null);
-                vcRepository.save(vc);
+        public void deleteRelation(Long vid) {
+                rRepository.deleteRelationByVid(vid);
         }
 
-        // 클래스 확인
-        public Optional<Wordclass> getWordclass(String classname) {
-                return wRepository.findByClassname(classname);
+        // 태그가 존재하는지 확인
+        public boolean isExistTag(String tag) {
+                Optional<Tag> result = tRepository.findByTagname(tag);
+                if (result == null) {
+                        return false;
+                }
+                return true;
+        }
+
+        // 태그 비교 후 추가할것 리턴
+        public List<String> compareTagList(List<String> before, List<String> after) {
+                after.removeAll(before);
+                return after;
 
         }
 
-        // 클래스 추가
-        public Wordclass registWordclass(String classname) {
-                Wordclass wordclass = new Wordclass(classname);
-                return wRepository.save(wordclass);
+        // 태그 추가
+        public void addTags(List<String> tags) {
+                for (String s : tags) {
+                        Optional<Tag> result = tRepository.findByTagname(s);
+                        if (result == null) {
+                                tRepository.save(new Tag(s));
+                        }
+                }
         }
 
-        // 클래스 삭제
-        public void deleteWordclass(Long wid) {
-                wRepository.deleteById(wid);
+        // 태그 삭제
+        public void deleteTags(List<String> tags) {
+                for (String s : tags) {
+                        Optional<Tag> result = tRepository.findByTagname(s);
+                        Tag t = result.orElseThrow();
+                        tRepository.delete(t);
+                }
         }
 
 }

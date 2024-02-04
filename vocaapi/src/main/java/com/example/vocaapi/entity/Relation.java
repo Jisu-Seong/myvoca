@@ -8,30 +8,30 @@ import jakarta.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class VocaAndClass {
+public class Relation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long vcid;
+    private Long rid;
 
     @ManyToOne
     @JoinColumn(name = "vid")
     private Vocabulary vocabulary;
 
     @ManyToOne
-    @JoinColumn(name = "wid")
-    private Wordclass wordclass;
+    @JoinColumn(name = "tid")
+    private Tag tag;
 
-    public VocaAndClass(Vocabulary v, Wordclass w) {
+    public Relation(Vocabulary v, Tag t) {
         this.vocabulary = v;
-        this.wordclass = w;
+        this.tag = t;
     }
 
     public void changeVoca(Vocabulary v) {
         this.vocabulary = v;
     }
 
-    public void changeWordClass(Wordclass w) {
-        this.wordclass = w;
+    public void changeTag(Tag t) {
+        this.tag = t;
     }
 }

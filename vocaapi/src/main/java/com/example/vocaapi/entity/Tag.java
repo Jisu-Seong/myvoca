@@ -2,7 +2,9 @@ package com.example.vocaapi.entity;
 
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.*;
@@ -12,18 +14,18 @@ import jakarta.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Wordclass {
+public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long wid;
+    private Long tid;
 
-    private String classname;
+    private String tagname;
 
-    @OneToMany(mappedBy = "wordclass")
+    @OneToMany(mappedBy = "tag")
     @ToString.Exclude
-    private Set<VocaAndClass> vocabularies = new HashSet<>();
+    private List<Relation> relations = new ArrayList<>();
 
-    public Wordclass(String classname) {
-        this.classname = classname;
+    public Tag(String tagname) {
+        this.tagname = tagname;
     }
 }

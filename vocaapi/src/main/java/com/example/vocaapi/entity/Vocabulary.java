@@ -1,6 +1,7 @@
 package com.example.vocaapi.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -66,5 +67,5 @@ public class Vocabulary {
     @OneToMany(mappedBy = "vocabulary")
     @ToString.Exclude
     @Setter
-    private Set<VocaAndClass> classes = new HashSet<>();
+    private List<Relation> relations = new ArrayList<>();
 }

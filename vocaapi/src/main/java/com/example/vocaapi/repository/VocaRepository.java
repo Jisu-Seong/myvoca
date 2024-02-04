@@ -13,7 +13,7 @@ import com.example.vocaapi.entity.Vocabulary;
 public interface VocaRepository extends JpaRepository<Vocabulary, Long> {
 
     // 폴더당 단어 리스트 조회
-    @Query(value = "select * from vocabulary where v.fid = :fid", nativeQuery = true)
+    @Query(value = "select * from vocabulary where fid = :fid", nativeQuery = true)
     List<Vocabulary> findVocaPageListByFid(Long fid);
 
     // 특정 단어 코드로 단어 정보 조회
