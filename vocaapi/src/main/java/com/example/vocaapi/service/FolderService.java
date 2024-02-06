@@ -1,6 +1,8 @@
 package com.example.vocaapi.service;
 
+import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -24,6 +26,12 @@ public class FolderService {
     private final MemberRepository memberRepository;
     private final FolderRepository folderRepository;
 
+    // mid
+    public Long getMidByPrincipal(Principal principal) {
+        String loginId = principal.getName();
+        return Long.valueOf(Integer.parseInt(loginId));
+    }
+
     public Long createFolder(String foldername) {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다."));
@@ -40,18 +48,37 @@ public class FolderService {
         }
     }
 
-    public FolderResponseDTO getFolderOne(Long fid) {
+    public FolderResponseDTO getFolderOne(Long fid, Principal principal) {
+        Long mid = getMidByPrincipal(principal);
         Folder folder = folderRepository.findByFid(fid).orElseThrow(() -> new RuntimeException("폴더 정보가 없습니다."));
-        return FolderResponseDTO.of(folder);
+        if (folder != null && mid == folder.getMember().getMid()) {
+            return FolderResponseDTO.of(folder);
+        }
+        return null;
     }
 
-    public FolderResponseDTO modifyFoldername(Long fid, String foldername) {
+    public FolderResponseDTO modifyFoldername(Long fid, String foldername, Principal principal) {
+        Long mid = getMidByPrincipal(principal);
         Folder folder = folderRepository.findByFid(fid).orElseThrow(() -> new RuntimeException("폴더 정보가 없습니다."));
-        folder.setFoldername(foldername);
-        return FolderResponseDTO.of(folderRepository.save(folder));
+        if (folder != null && mid == folder.getMember().getMid()) {
+            folder.setFoldername(foldername);
+            return FolderResponseDTO.of(folderRepository.save(folder));
+        }
+        return null;
     }
 
-    public void deleteFolder(Long fid) {
-        folderRepository.deleteById(fid);
+    public void deleteFolder(Long fid, Principal principal) {
+        Long mid = getMidByPrincipal(principal);
+        Optional<Folder> result = folderRepository.findByFid(fid);
+        if (result != null) {
+            Folder folder = result.orElseThrow();
+            if (mid == folder.getMember().getMid()) {
+                folderRepository.deleteById(fid);
+            } else {
+                throw new RuntimeException("삭제할 권한이 없습니다.");
+            }
+        } else {
+            throw new RuntimeException("존재하지 않는 폴더입니다.");
+        }
     }
 }

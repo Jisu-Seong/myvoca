@@ -1,5 +1,6 @@
 package com.example.vocaapi.controller;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
@@ -17,40 +18,49 @@ import com.example.vocaapi.dto.FolderResponseDTO;
 import com.example.vocaapi.service.FolderService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/folder")
+@Log4j2
 public class FolderController {
     private final FolderService folderService;
 
     @GetMapping("/all")
-    public List<FolderResponseDTO> getAll() {
+    public List<FolderResponseDTO> getAll(Principal principal) {
+        String loginId = principal.getName();
+        log.info(loginId);
         return folderService.getFolderBySecurity();
     }
 
     @GetMapping("/{fid}")
-    public FolderResponseDTO get(@PathVariable(name = "fid") Long fid) {
-        return folderService.getFolderOne(fid);
+    public FolderResponseDTO get(Principal principal,
+            @PathVariable(name = "fid") Long fid) {
+        return folderService.getFolderOne(fid, principal);
     }
 
     @PutMapping("/{fid}")
     public Map<String, String> modify(
+            Principal principal,
             @PathVariable(name = "fid") Long fid,
             @RequestBody FolderRequestDTO folderRequestDTO) {
-        folderService.modifyFoldername(fid, folderRequestDTO.getFoldername());
+        folderService.modifyFoldername(fid, folderRequestDTO.getFoldername(), principal);
         return Map.of("RESULT", "SUCCESS");
     }
 
     @PostMapping("/")
-    public Map<String, Long> register(@RequestBody FolderRequestDTO folderRequestDTO) {
+    public Map<String, Long> register(Principal principal,
+            @RequestBody FolderRequestDTO folderRequestDTO) {
         Long fid = folderService.createFolder(folderRequestDTO.getFoldername());
         return Map.of("FID", fid);
     }
 
     @DeleteMapping("/{fid}")
-    public Map<String, String> delete(@PathVariable(name = "fid") Long fid) {
-        folderService.deleteFolder(fid);
+    public Map<String, String> delete(
+            Principal principal,
+            @PathVariable(name = "fid") Long fid) {
+        folderService.deleteFolder(fid, principal);
         return Map.of("RESULT", "SUCCESS");
     }
 

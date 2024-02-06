@@ -1,5 +1,6 @@
 package com.example.vocaapi.service;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -45,72 +46,98 @@ public class VocaService {
         private final RelationRepository rRepository;
         private final TagRepository tRepository;
 
+        // mid
+        public Long getMidByPrincipal(Principal principal) {
+                String loginId = principal.getName();
+                return Long.valueOf(Integer.parseInt(loginId));
+        }
+
         // 폴더당 보카 리스트 수정요
-        public List<VocaResponseDTO> getVocaList(Long fid) {
+        public List<VocaResponseDTO> getVocaList(Long fid, Principal principal) {
+                Long mid = getMidByPrincipal(principal);
+                Folder folder = folderRepository.getReferenceById(fid);
 
-                Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
-                                .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다."));
-                List<Folder> fList = folderRepository.findByMember(member.getMid());
+                if (folder != null && mid == folder.getMember().getMid()) {
+                        List<Vocabulary> result = vRepository.findVocaPageListByFid(fid);
+                        if (result != null && result.size() != 0) {
+                                return result.stream().map(x -> VocaResponseDTO.of(x)).collect(Collectors.toList());
+                        }
+                }
+                return null;
+        }
 
-                Optional<Folder> folder = folderRepository.findByFid(fid);
+        // 보카 상세 o
+        public VocaResponseDTO getOneVoca(Long vid, Principal principal) {
+                Long mid = getMidByPrincipal(principal);
+                Optional<Vocabulary> result = vRepository.findByVid(vid);
+                Vocabulary vocabulary = result.orElseThrow();
+                Folder folder = vocabulary.getFolder();
+                if (folder != null && mid == folder.getMember().getMid()) {
+                        return VocaResponseDTO.of(vocabulary);
+                }
+                return null;
+        }
 
-                if (folder != null && fList != null && fList.size() != 0) {
-                        List<Vocabulary> vList = vRepository.findVocaPageListByFid(fid);
-                        return vList.stream().map(voca -> VocaResponseDTO.of(voca)).collect(Collectors.toList());
+        // 보카 삭제 o
+        public void deleteVoca(Long vid, Principal principal) {
+                Long mid = getMidByPrincipal(principal);
+                Optional<Vocabulary> result = vRepository.findByVid(vid);
+                Vocabulary vocabulary = result.orElseThrow();
+                Folder folder = vocabulary.getFolder();
+                if (folder != null && mid == folder.getMember().getMid()) {
+                        vRepository.deleteById(vid);
+                }
+        }
 
-                } else {
-                        return null;
+        // 보카 편집
+        public void modifyVoca(Long vid, VocaRequestDTO vocaRequestDTO, Principal principal) {
+                Long mid = getMidByPrincipal(principal);
+                Optional<Vocabulary> result = vRepository.findByVid(vid);
+                Vocabulary v = result.orElseThrow();
+                Folder folder = v.getFolder();
+                if (folder != null && mid == folder.getMember().getMid()) {
+                        v.changeVocaname(vocaRequestDTO.getVocaname());
+                        v.changeMeanings(vocaRequestDTO.getMeaning());
+                        v.changeSentence(vocaRequestDTO.getSentence());
+                        v.changeMark(vocaRequestDTO.isMarked());
+                        v.changeUpdateAt();
                 }
 
         }
 
-        // 보카 상세 o
-        public VocaResponseDTO getOneVoca(Long vid) {
-                Optional<Vocabulary> result = vRepository.findByVid(vid);
-                return VocaResponseDTO.of(result.orElseThrow());
-        }
-
-        // 보카 삭제 o
-        public void deleteVoca(Long vid) {
-                vRepository.deleteById(vid);
-        }
-
-        // 보카 편집
-        public void modifyVoca(Long vid, VocaRequestDTO vocaRequestDTO) {
-                Optional<Vocabulary> result = vRepository.findByVid(vid);
-                Vocabulary v = result.orElseThrow();
-                v.changeVocaname(vocaRequestDTO.getVocaname());
-                v.changeMeanings(vocaRequestDTO.getMeaning());
-                v.changeSentence(vocaRequestDTO.getSentence());
-                v.changeMark(vocaRequestDTO.isMarked());
-                v.changeUpdateAt();
-
-        }
-
         // 보카 추가
-        public VocaResponseDTO addVoca(Long fid, VocaRequestDTO vocaRequestDTO) {
+        public VocaResponseDTO addVoca(Long fid, VocaRequestDTO vocaRequestDTO, Principal principal) {
+                Long mid = getMidByPrincipal(principal);
                 Folder folder = folderRepository.getReferenceById(fid);
-                Vocabulary voca = Vocabulary.builder()
-                                .folder(folder)
-                                .vocaname(vocaRequestDTO.getVocaname())
-                                .meaning(vocaRequestDTO.getMeaning())
-                                .sentence(vocaRequestDTO.getSentence())
-                                .isMarked(vocaRequestDTO.isMarked())
-                                .build();
-                return VocaResponseDTO.of(vRepository.save(voca));
+                if (folder != null && mid == folder.getMember().getMid()) {
+                        Vocabulary voca = Vocabulary.builder()
+                                        .folder(folder)
+                                        .vocaname(vocaRequestDTO.getVocaname())
+                                        .meaning(vocaRequestDTO.getMeaning())
+                                        .sentence(vocaRequestDTO.getSentence())
+                                        .isMarked(vocaRequestDTO.isMarked())
+                                        .build();
+                        return VocaResponseDTO.of(vRepository.save(voca));
+                }
+                return null;
         }
 
         // 한 태그에 해당하는 모든 보카 조회
 
         // 한 단어에 해당되는 모든 태그 조회
-        public List<String> findAllTagsByVoca(Long vid) {
-                Vocabulary v = vRepository.getReferenceById(vid);
-                List<Relation> list = rRepository.findRelationByVid(v.getVid());
-                if (list != null && list.size() != 0) {
-                        return list.stream().map(x -> x.getTag().getTagname()).collect(Collectors.toList());
-                } else {
-                        return null;
+        public List<String> findAllTagsByVoca(Long vid, Principal principal) {
+                Long mid = getMidByPrincipal(principal);
+                Optional<Vocabulary> result = vRepository.findByVid(vid);
+                Vocabulary v = result.orElseThrow();
+                Folder folder = v.getFolder();
+
+                if (folder != null && mid == folder.getMember().getMid()) {
+                        List<Relation> list = rRepository.findRelationByVid(v.getVid());
+                        if (list != null && list.size() != 0) {
+                                return list.stream().map(x -> x.getTag().getTagname()).collect(Collectors.toList());
+                        }
                 }
+                return null;
 
         }
 

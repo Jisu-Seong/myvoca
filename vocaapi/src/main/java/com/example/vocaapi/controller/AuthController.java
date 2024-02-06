@@ -1,7 +1,10 @@
 package com.example.vocaapi.controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,5 +32,16 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<TokenDTO> login(@RequestBody MemberRequestDTO requestDto) {
         return ResponseEntity.ok(authService.login(requestDto));
+    }
+
+    @RequestMapping("/logout")
+    public Map<String, String> logout(@RequestBody TokenDTO tokenDTO) {
+        authService.logout(tokenDTO.getAccessToken(), tokenDTO.getRefreshToken());
+        return Map.of("RESULT", "SUCCESS");
+    }
+
+    @PostMapping("/refresh/{rToken}")
+    public ResponseEntity<TokenDTO> refresh(@RequestBody TokenDTO tokenDTO) {
+        return ResponseEntity.ok(authService.refresh(tokenDTO.getAccessToken(), tokenDTO.getRefreshToken()));
     }
 }

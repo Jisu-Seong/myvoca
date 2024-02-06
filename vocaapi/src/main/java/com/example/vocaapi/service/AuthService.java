@@ -1,6 +1,9 @@
 package com.example.vocaapi.service;
 
+import java.net.http.HttpRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.ServerProperties.Reactive.Session;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -12,8 +15,10 @@ import com.example.vocaapi.dto.MemberResponseDto;
 import com.example.vocaapi.dto.TokenDTO;
 import com.example.vocaapi.entity.Member;
 import com.example.vocaapi.jwt.TokenProvider;
+import com.example.vocaapi.redis.RedisUtil;
 import com.example.vocaapi.repository.MemberRepository;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -21,14 +26,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional
 public class AuthService {
-    @Autowired
     private final AuthenticationManagerBuilder managerBuilder;
-    @Autowired
     private final MemberRepository memberRepository;
-    @Autowired
     private final PasswordEncoder passwordEncoder;
-    @Autowired
     private final TokenProvider tokenProvider;
+    private final RedisUtil redisUtil;
 
     public MemberResponseDto signup(MemberRequestDTO requestDto) {
         if (memberRepository.existsByEmail(requestDto.getEmail())) {
@@ -45,6 +47,20 @@ public class AuthService {
         Authentication authentication = managerBuilder.getObject().authenticate(authenticationToken);
 
         return tokenProvider.generateTokenDto(authentication);
+    }
+
+    public void logout(String accessToken, String refreshToken) {
+        redisUtil.setBlackList(accessToken, "accessToken", 1800);
+        redisUtil.setBlackList(refreshToken, "refreshToken", 60400);
+    }
+
+    public TokenDTO refresh(String aToken, String rToken) {
+        if (!tokenProvider.validateToken(rToken)) {
+            throw new RuntimeException("유효하지 않은 refreshToken입니다.");
+        }
+        Authentication authentication = tokenProvider.getAuthentication(aToken);
+        return tokenProvider.generateTokenDto(authentication);
+
     }
 
 }
