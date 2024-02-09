@@ -4,6 +4,8 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,8 +14,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.vocaapi.dto.PageResponseDTO;
+import com.example.vocaapi.dto.SortRequestDTO;
 import com.example.vocaapi.dto.VocaFormDTO;
 import com.example.vocaapi.dto.VocaResponseDTO;
 import com.example.vocaapi.service.VocaService;
@@ -28,10 +33,18 @@ public class VocaController {
     private final VocaService vocaService;
 
     @GetMapping("/list/{fid}")
-    public List<VocaResponseDTO> getVocaListFolder(
+    public ResponseEntity<PageResponseDTO<VocaResponseDTO>> getVocaListFolder(
             Principal principal,
-            @PathVariable(name = "fid") Long fid) {
-        return vocaService.getVocaList(fid, principal);
+            @PathVariable(name = "fid") Long fid,
+            @RequestBody SortRequestDTO sortRequestDTO,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        return new ResponseEntity<>(
+                vocaService.getVocaList(fid, principal,
+                        sortRequestDTO, page, size),
+                HttpStatus.OK);
+
     }
 
     @GetMapping("/{vid}")

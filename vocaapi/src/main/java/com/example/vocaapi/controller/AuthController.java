@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,7 +42,12 @@ public class AuthController {
     }
 
     @PostMapping("/refresh/{rToken}")
-    public ResponseEntity<TokenDTO> refresh(@RequestBody TokenDTO tokenDTO) {
-        return ResponseEntity.ok(authService.refresh(tokenDTO.getAccessToken(), tokenDTO.getRefreshToken()));
+    public ResponseEntity<TokenDTO> refresh(@RequestHeader("Authorization") String authHeader, String refreshToken) {
+        if (authHeader == null || authHeader.length() < 7) {
+            throw new RuntimeException("INVALID_STRING");
+        }
+        String accessToken = authHeader.substring(7);
+
+        return ResponseEntity.ok(authService.refresh(accessToken, refreshToken));
     }
 }

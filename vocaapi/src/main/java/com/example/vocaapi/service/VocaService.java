@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.vocaapi.config.SecurityUtil;
+import com.example.vocaapi.dto.PageResponseDTO;
+import com.example.vocaapi.dto.SortRequestDTO;
 import com.example.vocaapi.dto.VocaRequestDTO;
 import com.example.vocaapi.dto.VocaResponseDTO;
 import com.example.vocaapi.entity.Folder;
@@ -53,17 +55,46 @@ public class VocaService {
         }
 
         // 폴더당 보카 리스트 수정요
-        public List<VocaResponseDTO> getVocaList(Long fid, Principal principal) {
+        public PageResponseDTO<VocaResponseDTO> getVocaList(Long fid, Principal principal,
+                        SortRequestDTO sortRequestDTO, int page, int size) {
                 Long mid = getMidByPrincipal(principal);
                 Folder folder = folderRepository.getReferenceById(fid);
 
                 if (folder != null && mid == folder.getMember().getMid()) {
-                        List<Vocabulary> result = vRepository.findVocaPageListByFid(fid);
-                        if (result != null && result.size() != 0) {
-                                return result.stream().map(x -> VocaResponseDTO.of(x)).collect(Collectors.toList());
-                        }
+                        SortRequestDTO convertSort = convertNullSort(sortRequestDTO);
+                        Sort sort = Sort.by(convertSort.isAsc() ? Sort.Direction.ASC : Sort.Direction.DESC,
+                                        convertSort.getSortname());
+                        Pageable pageable = PageRequest.of(page, size, sort);
+                        Page<Vocabulary> pages = vRepository.findVocaPageListByFid(fid, convertSort.isMarked(),
+                                        pageable);
+
+                        List<Vocabulary> list = pages.getContent();
+                        long totalElements = pages.getTotalElements();
+                        int totalPages = pages.getTotalPages();
+                        int currentPage = pages.getNumber();
+
+                        List<VocaResponseDTO> resList = list.stream().map(x -> VocaResponseDTO.of(x))
+                                        .collect(Collectors.toList());
+
+                        return new PageResponseDTO<>(resList, totalElements, totalPages, currentPage);
+
                 }
                 return null;
+        }
+
+        private SortRequestDTO convertNullSort(SortRequestDTO sortRequestDTO) {
+                boolean marked = false;
+                String sortname = "updatedAt";
+                boolean asc = false;
+                if (sortRequestDTO != null) {
+                        if (sortRequestDTO.getSortname() != null) {
+                                sortname = sortRequestDTO.getSortname();
+                        }
+                        marked = sortRequestDTO.isMarked();
+                        asc = sortRequestDTO.isAsc();
+                }
+                return new SortRequestDTO(marked, sortname, asc);
+
         }
 
         // 보카 상세 o
