@@ -1,57 +1,46 @@
 package com.example.vocaapi.entity;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
+import java.util.*;
 
 @Entity
-@Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@Getter
+@ToString(exclude = "memberRoleList")
 public class Member {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long mid;
+    @Id
+    private String email;
 
-	@Column
-	private String password;
+    private String pw;
+    private String nickname;
+    private boolean social;
 
-	@Column
-	private String nickname;
+    @ElementCollection(fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<MemberRole> memberRoleList = new ArrayList<>();
 
-	@Column
-	private String email;
+    public void addRole(MemberRole memberRole) {
+        memberRoleList.add(memberRole);
+    }
 
-	@Column
-	@Enumerated(EnumType.STRING)
-	private Authority authority;
+    public void clearRole() {
+        memberRoleList.clear();
+    }
 
-	@CreationTimestamp
-	private LocalDateTime createdAt = LocalDateTime.now();
+    public void changeNickname(String nickname) {
+        this.nickname = nickname;
+    }
 
-	@UpdateTimestamp
-	private LocalDateTime updatedAt = LocalDateTime.now();
+    public void changePw(String pw) {
+        this.pw = pw;
+    }
 
-	public String filename;
+    public void changeSocial(boolean social) {
+        this.social = social;
+    }
 
-	@OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
-	private List<Folder> folders;
 }
