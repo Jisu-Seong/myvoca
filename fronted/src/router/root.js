@@ -1,35 +1,54 @@
 import { Suspense, lazy } from "react";
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import memberRouter from "./memberRouter";
+import folderRouter from "./folderRouter";
+import vocaRouter from "./vocaRouter";
+
+const { createBrowserRouter } = require("react-router-dom");
 
 const Loading = <div>Loading...</div>;
-const Login = lazy(() => import("../pages/LoginPage"));
-const MainPage = lazy(() => import("../pages/MainPage"));
-const MemberPage = lazy(() => import("../pages/MemberPage"));
+const Main = lazy(() => import("../pages/MainPage"));
+const About = lazy(() => import("../pages/AboutPage"));
+const FolderIndex = lazy(() => import("../pages/folder/IndexPage"));
+const VocaIndex = lazy(() => import("../pages/voca/IndexPage"));
 
 const root = createBrowserRouter([
   {
-    path: "/",
+    path: "",
     element: (
       <Suspense fallback={Loading}>
-        <MainPage />
+        <Main />
       </Suspense>
     ),
   },
   {
-    path: "login",
+    path: "about",
     element: (
       <Suspense fallback={Loading}>
-        <Login />
+        <About />
       </Suspense>
     ),
   },
   {
-    path: "memberpage",
+    path: "folder",
     element: (
       <Suspense fallback={Loading}>
-        <MemberPage />
+        <FolderIndex />
       </Suspense>
     ),
+    children: folderRouter(),
+  },
+  {
+    path: "voca",
+    element: (
+      <Suspense fallback={Loading}>
+        <VocaIndex />
+      </Suspense>
+    ),
+    children: vocaRouter(),
+  },
+  {
+    path: "member",
+    children: memberRouter(),
   },
 ]);
 

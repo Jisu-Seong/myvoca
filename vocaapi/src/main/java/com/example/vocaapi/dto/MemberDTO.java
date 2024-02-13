@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -14,8 +16,12 @@ import lombok.ToString;
 @Setter
 @ToString
 public class MemberDTO extends User {
+    @NotBlank
+    @Email
     private String email;
+    @NotBlank
     private String pw;
+    @NotBlank
     private String nickname;
     private boolean social;
     private List<String> roleNames = new ArrayList<>();

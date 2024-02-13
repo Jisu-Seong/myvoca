@@ -29,9 +29,9 @@ public class Folder {
 
     private boolean delFlag;
 
-    // @ManyToOne
-    // @JoinColumn(name = "mid")
-    // private Member member;
+    @ManyToOne
+    @JoinColumn(name = "email")
+    private Member member;
 
     @OneToMany(mappedBy = "folder", cascade = CascadeType.REMOVE)
     private List<Vocabulary> vocabularies;

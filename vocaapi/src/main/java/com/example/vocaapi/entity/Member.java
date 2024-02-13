@@ -4,6 +4,12 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.util.*;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.example.vocaapi.dto.MemberDTO;
+
 @Entity
 @Builder
 @AllArgsConstructor
@@ -41,6 +47,19 @@ public class Member {
 
     public void changeSocial(boolean social) {
         this.social = social;
+    }
+
+    public static Member toMember(JoinRequestDTO joinRequestDTO, PasswordEncoder passwordEncoder) {
+        Member member = Member.builder()
+                .email(joinRequestDTO.getEmail())
+                .pw(passwordEncoder.encode(joinRequestDTO.getPassword()))
+                .build();
+        member.addRole(MemberRole.USER);
+        return member;
+    }
+
+    public UsernamePasswordAuthenticationToken toAuthentication() {
+        return new UsernamePasswordAuthenticationToken(email, pw);
     }
 
 }

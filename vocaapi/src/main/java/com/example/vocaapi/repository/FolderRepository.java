@@ -12,8 +12,8 @@ import com.example.vocaapi.entity.Folder;
 @Repository
 public interface FolderRepository extends JpaRepository<Folder, Long> {
 
-    @Query(value = "select * from folder where folder.mid = :mid", nativeQuery = true)
-    List<Folder> findByMember(Long mid);
+    @Query(value = "select * from folder where folder.email = :email", nativeQuery = true)
+    List<Folder> findByMember(String email);
 
     Optional<Folder> findByFid(Long fid);
 }
