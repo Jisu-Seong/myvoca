@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import BasicLayout from "../../layouts/BasicLayout";
 import useCustomLogin from "../../hooks/useCustomLogin";
+import ListComponent from "../../components/folder/ListComponent";
 
 const ListPage = () => {
   const { isLogin, moveToLoginReturn } = useCustomLogin();
@@ -9,9 +10,10 @@ const ListPage = () => {
     return moveToLoginReturn();
   }
   return (
-    <BasicLayout>
-      <div className=" text-3xl">ListPage</div>
-    </BasicLayout>
+    <div>
+      <div className=" text-3xl">Folder List</div>
+      <ListComponent />
+    </div>
   );
 };
 

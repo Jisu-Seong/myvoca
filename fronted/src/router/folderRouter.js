@@ -3,6 +3,7 @@ import { Navigate } from "react-router-dom";
 
 const Loading = <div>Loading...</div>;
 const ListPage = lazy(() => import("../pages/folder/ListPage"));
+const AddPage = lazy(() => import("../pages/folder/AddPage"));
 
 const folderRouter = () => {
   return [
@@ -14,14 +15,18 @@ const folderRouter = () => {
         </Suspense>
       ),
     },
-    // {
-    //   path: "",
-    //   element: <Navigate replace to="/folder/list/" />,
-    // },
-    // {
-    //   path: "add",
-    //   element: <Suspense fallback={Loading}></Suspense>,
-    // },
+    {
+      path: "",
+      element: <Navigate replace to="list/" />,
+    },
+    {
+      path: "add",
+      element: (
+        <Suspense fallback={Loading}>
+          <AddPage />
+        </Suspense>
+      ),
+    },
     // {
     //   path: "read/:fid",
     //   element: <Suspense fallback={Loading}></Suspense>,

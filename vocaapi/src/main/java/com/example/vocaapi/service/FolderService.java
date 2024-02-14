@@ -36,11 +36,9 @@ public class FolderService {
         Optional<Member> result = memberRepository.findByEmail(principal.getName());
         Member member = result.orElseThrow();
         List<Folder> folders = folderRepository.findByMember(member.getEmail());
-        if (folders != null && folders.size() != 0) {
-            return folders.stream().map(folder -> FolderResponseDTO.of(folder)).collect(Collectors.toList());
-        } else {
-            return null;
-        }
+
+        return folders.stream().map(folder -> FolderResponseDTO.of(folder)).collect(Collectors.toList());
+
     }
 
     public FolderResponseDTO getFolderOne(Long fid, Principal principal) {

@@ -11,21 +11,15 @@ const BasicMenu = () => {
           <li className="pr-6 text-2xl">
             <Link to={"/"}>MYVOCA</Link>
           </li>
-          {loginState.email ? (
-            <>
-              <li className="pr-6 text-2xl">
-                <Link to={"/folder/"}>folder</Link>
-              </li>
-              <li className="pr-6 text-2xl">
-                <Link to={"/voca/"}>voca</Link>
-              </li>
-              <li className="pr-6 text-2xl">
-                <Link to={"/member/mypage/"}>mypage</Link>
-              </li>
-            </>
-          ) : (
-            <></>
-          )}
+          <li className="pr-6 text-2xl">
+            <Link to={"/folder/list"}>folder</Link>
+          </li>
+          <li className="pr-6 text-2xl">
+            <Link to={"/voca/"}>voca</Link>
+          </li>
+          <li className="pr-6 text-2xl">
+            <Link to={"/member/mypage/"}>mypage</Link>
+          </li>
         </ul>
       </div>
 

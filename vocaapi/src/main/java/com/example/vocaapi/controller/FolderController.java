@@ -31,7 +31,10 @@ public class FolderController {
     public List<FolderResponseDTO> getAll(Principal principal) {
         String loginId = principal.getName();
         log.info(loginId);
-        return folderService.getFolderBySecurity(principal);
+        List<FolderResponseDTO> result = folderService.getFolderBySecurity(principal);
+        log.info(result);
+        return result;
+
     }
 
     @GetMapping("/{fid}")

@@ -8,8 +8,8 @@ const { createBrowserRouter } = require("react-router-dom");
 const Loading = <div>Loading...</div>;
 const Main = lazy(() => import("../pages/MainPage"));
 const About = lazy(() => import("../pages/AboutPage"));
-const FolderIndex = lazy(() => import("../pages/folder/IndexPage"));
 const VocaIndex = lazy(() => import("../pages/voca/IndexPage"));
+const FolderList = lazy(() => import("../pages/folder/IndexPage"));
 
 const root = createBrowserRouter([
   {
@@ -32,7 +32,7 @@ const root = createBrowserRouter([
     path: "folder",
     element: (
       <Suspense fallback={Loading}>
-        <FolderIndex />
+        <FolderList />
       </Suspense>
     ),
     children: folderRouter(),
