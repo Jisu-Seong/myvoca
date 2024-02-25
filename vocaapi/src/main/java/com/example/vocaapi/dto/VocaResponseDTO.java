@@ -1,6 +1,7 @@
 package com.example.vocaapi.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.example.vocaapi.entity.Vocabulary;
 
@@ -18,6 +19,7 @@ public class VocaResponseDTO {
     private LocalDateTime updatedAt;
     private String meaning;
     private String sentence;
+    private List<String> tags;
 
     public static VocaResponseDTO of(Vocabulary vocabulary) {
         return VocaResponseDTO.builder()

@@ -21,6 +21,8 @@ import com.example.vocaapi.dto.PageResponseDTO;
 import com.example.vocaapi.dto.SortRequestDTO;
 import com.example.vocaapi.dto.VocaFormDTO;
 import com.example.vocaapi.dto.VocaResponseDTO;
+import com.example.vocaapi.entity.Tag;
+import com.example.vocaapi.entity.Vocabulary;
 import com.example.vocaapi.service.VocaService;
 
 import lombok.RequiredArgsConstructor;
@@ -29,7 +31,6 @@ import lombok.extern.log4j.Log4j2;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/voca")
-@Transactional
 @Log4j2
 public class VocaController {
     private final VocaService vocaService;
@@ -66,52 +67,53 @@ public class VocaController {
         return vocaService.getOneVoca(vid, principal);
     }
 
-    @GetMapping("/tags/{vid}")
-    public List<String> getTagsOneVoca(
-            Principal principal,
-            @PathVariable(name = "vid") Long vid) {
-        return vocaService.findAllTagsByVoca(vid, principal);
-    }
+    // @GetMapping("/tags/{vid}")
+    // public List<String> getTagsOneVoca(
+    // Principal principal,
+    // @PathVariable(name = "vid") Long vid) {
+    // return vocaService.findAllTagsByVoca(vid, principal);
+    // }
 
     @PostMapping("/add/{fid}")
-    public Map<String, Long> addVoca(
+    public Map<String, Object> addVoca(
             Principal principal,
             @PathVariable(name = "fid") Long fid,
             @RequestBody VocaFormDTO vocaFormDTO) {
         log.info("form responseDTO ========================");
         log.info(vocaFormDTO);
-        VocaResponseDTO vocaResponseDTO = vocaService.addVoca(fid,
-                vocaFormDTO.getVocaRequestDTO(), principal);
+        List<Tag> tags = vocaService.addTags(vocaFormDTO.getTags());
+        Vocabulary voca = vocaService.addVoca(fid,
+                vocaFormDTO.getVocaRequestDTO(), tags, principal);
+        VocaResponseDTO vocaResponseDTO = VocaResponseDTO.of(voca);
         log.info("보카 responseDTO ========================");
         log.info(vocaResponseDTO);
-        vocaService.addTags(vocaFormDTO.getTags());
-        log.info("태그 입력 =======================================");
-        vocaService.addRelation(vocaResponseDTO.getVid(), vocaFormDTO.getTags());
-        log.info("add relation ================================");
-        return Map.of("vid", vocaResponseDTO.getVid());
+        vocaResponseDTO.setTags(vocaFormDTO.getTags());
+        return Map.of("vocaResponseDTO", vocaResponseDTO);
     }
 
-    @PutMapping("/modify/{vid}")
-    public Map<String, String> modifyVoca(
-            Principal principal,
-            @PathVariable(name = "vid") Long vid,
-            @RequestBody VocaFormDTO vocaFormDTO) {
-        vocaService.deleteRelation(vid);
-        vocaService.modifyVoca(vid, vocaFormDTO.getVocaRequestDTO(), principal);
-        List<String> newTags = vocaService.compareTagList(vocaService.findAllTagsByVoca(vid, principal),
-                vocaFormDTO.getTags());
-        vocaService.addTags(newTags);
-        vocaService.addRelation(vid, vocaFormDTO.getTags());
-        return Map.of("RESULT", "SUCCESS");
-    }
+    // @PutMapping("/modify/{vid}")
+    // public Map<String, String> modifyVoca(
+    // Principal principal,
+    // @PathVariable(name = "vid") Long vid,
+    // @RequestBody VocaFormDTO vocaFormDTO) {
+    // vocaService.deleteRelation(vid);
+    // Vocabulary v = vocaService.modifyVoca(vid, vocaFormDTO.getVocaRequestDTO(),
+    // principal);
+    // List<String> newTags =
+    // vocaService.compareTagList(vocaService.findAllTagsByVoca(vid, principal),
+    // vocaFormDTO.getTags());
+    // vocaService.addTags(newTags);
+    // vocaService.addRelation(v, vocaFormDTO.getTags());
+    // return Map.of("RESULT", "SUCCESS");
+    // }
 
-    @DeleteMapping("/{vid}")
-    public Map<String, String> deleteVoca(
-            Principal principal,
-            @PathVariable(name = "vid") Long vid) {
-        vocaService.deleteRelation(vid);
-        vocaService.deleteVoca(vid, principal);
-        return Map.of("RESULT", "SUCCESS");
-    }
+    // @DeleteMapping("/{vid}")
+    // public Map<String, String> deleteVoca(
+    // Principal principal,
+    // @PathVariable(name = "vid") Long vid) {
+    // vocaService.deleteRelation(vid);
+    // vocaService.deleteVoca(vid, principal);
+    // return Map.of("RESULT", "SUCCESS");
+    // }
 
 }

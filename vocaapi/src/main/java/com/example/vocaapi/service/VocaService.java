@@ -24,12 +24,10 @@ import com.example.vocaapi.dto.VocaRequestDTO;
 import com.example.vocaapi.dto.VocaResponseDTO;
 import com.example.vocaapi.entity.Folder;
 import com.example.vocaapi.entity.Member;
-import com.example.vocaapi.entity.Relation;
 import com.example.vocaapi.entity.Vocabulary;
 import com.example.vocaapi.entity.Tag;
 import com.example.vocaapi.repository.FolderRepository;
 import com.example.vocaapi.repository.MemberRepository;
-import com.example.vocaapi.repository.RelationRepository;
 import com.example.vocaapi.repository.VocaRepository;
 import com.example.vocaapi.repository.TagRepository;
 
@@ -44,7 +42,7 @@ public class VocaService {
     private final MemberRepository memberRepository;
     private final FolderRepository folderRepository;
     private final VocaRepository vRepository;
-    private final RelationRepository rRepository;
+    // private final RelationRepository rRepository;
     private final TagRepository tRepository;
 
     // 폴더당 보카 리스트 수정요
@@ -173,7 +171,7 @@ public class VocaService {
     }
 
     // 보카 편집
-    public void modifyVoca(Long vid, VocaRequestDTO vocaRequestDTO, Principal principal) {
+    public Vocabulary modifyVoca(Long vid, VocaRequestDTO vocaRequestDTO, Principal principal) {
         Optional<Member> memberResult = memberRepository.findByEmail(principal.getName());
         Member member = memberResult.orElseThrow();
 
@@ -188,11 +186,12 @@ public class VocaService {
                 v.changeUpdateAt();
             }
         }
+        return v;
 
     }
 
     // 보카 추가
-    public VocaResponseDTO addVoca(Long fid, VocaRequestDTO vocaRequestDTO,
+    public Vocabulary addVoca(Long fid, VocaRequestDTO vocaRequestDTO, List<Tag> tags,
             Principal principal) {
         Optional<Member> memberResult = memberRepository.findByEmail(principal.getName());
         Member member = memberResult.orElseThrow();
@@ -206,8 +205,9 @@ public class VocaService {
                     .meaning(vocaRequestDTO.getMeaning())
                     .sentence(vocaRequestDTO.getSentence())
                     .isMarked(vocaRequestDTO.isMarked())
+                    .tags(tags)
                     .build();
-            return VocaResponseDTO.of(vRepository.save(voca));
+            return vRepository.save(voca);
         }
         return null;
     }
@@ -215,47 +215,47 @@ public class VocaService {
     // 한 태그에 해당하는 모든 보카 조회
 
     // 한 단어에 해당되는 모든 태그 조회
-    public List<String> findAllTagsByVoca(Long vid, Principal principal) {
-        Optional<Member> memberResult = memberRepository.findByEmail(principal.getName());
-        Member member = memberResult.orElseThrow();
+    // public List<String> findAllTagsByVoca(Long vid, Principal principal) {
+    // Optional<Member> memberResult =
+    // memberRepository.findByEmail(principal.getName());
+    // Member member = memberResult.orElseThrow();
 
-        Vocabulary v = vRepository.findByVid(vid);
-        Folder folder = v.getFolder();
+    // Vocabulary v = vRepository.findByVid(vid);
+    // Folder folder = v.getFolder();
 
-        if (folder != null && member.getEmail().equals(folder.getMember().getEmail())) {
-            List<Relation> list = rRepository.findRelationByVid(v.getVid());
-            if (list != null && list.size() != 0) {
-                return list.stream().map(x -> x.getTag().getTagname()).collect(Collectors.toList());
-            }
-        }
-        return null;
+    // if (folder != null &&
+    // member.getEmail().equals(folder.getMember().getEmail())) {
+    // List<Relation> list = rRepository.findRelationByVid(v.getVid());
+    // if (list != null && list.size() != 0) {
+    // return list.stream().map(x ->
+    // x.getTag().getTagname()).collect(Collectors.toList());
+    // }
+    // }
+    // return null;
 
-    }
+    // }
 
     // 관계 추가
-    public void addRelation(Long vid, List<String> tags) {
-        log.info("==============Voca Service===============");
-        log.info("브이아이디: " + vid);
-        log.info("태그들: " + tags);
-        Optional<Vocabulary> result = vRepository.findById(vid).ofNullable(null);
-        Vocabulary v = result.orElseGet(null);
-        log.info("단어들: " + v);
-        for (String tag : tags) {
-            log.info("==============result전===============");
-            Tag t = tRepository.findByTagname(tag);
-            if (t != null && v != null) {
-                log.info("==============result후===============");
-                rRepository.save(new Relation(v, t));
-                log.info("==============result save후===============");
-            }
-        }
+    // public void addRelation(Vocabulary voca, List<String> tags) {
+    // log.info("==============Voca Service===============");
+    // log.info("보카: " + voca);
+    // log.info("태그들: " + tags);
+    // for (String tag : tags) {
+    // log.info("==============result전===============");
+    // Tag t = tRepository.findByTagname(tag);
+    // if (t != null && voca != null) {
+    // log.info("==============result후===============");
+    // rRepository.save(new Relation(voca, t));
+    // log.info("==============result save후===============");
+    // }
+    // }
 
-    }
+    // }
 
     // 관계 삭제
-    public void deleteRelation(Long vid) {
-        rRepository.deleteRelationByVid(vid);
-    }
+    // public void deleteRelation(Long vid) {
+    // rRepository.deleteRelationByVid(vid);
+    // }
 
     // 태그가 존재하는지 확인
     public boolean isExistTag(String tag) {
@@ -274,13 +274,18 @@ public class VocaService {
     }
 
     // 태그 추가
-    public void addTags(List<String> tags) {
+    public List<Tag> addTags(List<String> tags) {
+        List<Tag> list = new ArrayList<>();
         for (String s : tags) {
             Tag result = tRepository.findByTagname(s);
             if (result == null) {
-                tRepository.save(new Tag(s));
+                list.add(tRepository.save(new Tag(s)));
+            } else {
+                list.add(result);
+
             }
         }
+        return list;
     }
 
     // 태그 삭제

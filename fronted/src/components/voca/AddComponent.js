@@ -64,7 +64,7 @@ const AddComponent = () => {
     postAdd(fid, vocaFormDTO)
       .then((result) => {
         console.log(result);
-        setResult(result.vid);
+        setResult(result.vocaResponseDTO.vid);
         setVoca({ ...initState });
       })
       .catch((e) => {

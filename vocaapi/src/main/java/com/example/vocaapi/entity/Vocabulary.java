@@ -64,8 +64,7 @@ public class Vocabulary {
         this.updatedAt = LocalDateTime.now();
     }
 
-    @OneToMany(mappedBy = "vocabulary")
-    @ToString.Exclude
-    @Setter
-    private List<Relation> relations = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(name = "relation", joinColumns = @JoinColumn(name = "vid"), inverseJoinColumns = @JoinColumn(name = "tid"))
+    private List<Tag> tags = new ArrayList<>();
 }

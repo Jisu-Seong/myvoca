@@ -21,9 +21,8 @@ public class Tag {
 
     private String tagname;
 
-    @OneToMany(mappedBy = "tag")
-    @ToString.Exclude
-    private List<Relation> relations = new ArrayList<>();
+    @ManyToMany(mappedBy = "tags")
+    private List<Vocabulary> vocabularies = new ArrayList<>();
 
     public Tag(String tagname) {
         this.tagname = tagname;
