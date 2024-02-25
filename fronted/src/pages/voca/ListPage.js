@@ -1,17 +1,12 @@
-import { Link } from "react-router-dom";
-import BasicLayout from "../../layouts/BasicLayout";
-import useCustomLogin from "../../hooks/useCustomLogin";
+import { useParams } from "react-router-dom";
+import ListComponent from "../../components/voca/ListComponent";
 
 const ListPage = () => {
-  const { isLogin, moveToLoginReturn } = useCustomLogin();
-
-  if (!isLogin) {
-    return moveToLoginReturn();
-  }
   return (
-    <BasicLayout>
-      <div className=" text-3xl">ListPage</div>
-    </BasicLayout>
+    <div>
+      <div>Voca List Page! </div>
+      <ListComponent />
+    </div>
   );
 };
 

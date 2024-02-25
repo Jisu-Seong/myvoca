@@ -1,4 +1,4 @@
-package com.example.vocaapi.entity;
+package com.example.vocaapi.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

@@ -2,15 +2,20 @@ import { useEffect, useState } from "react";
 import useCustomMove from "../../hooks/useCustomMove";
 import jwtAxios from "./../../util/jwtUtil";
 import { getList } from "../../api/folderApi";
+import FetchingModal from "../common/FetchingModal";
+import useCustomLogin from "./../../hooks/useCustomLogin";
 
 const ListComponent = () => {
   const [serverData, setServerData] = useState([]);
-  const { moveToList, refresh, moveToRead } = useCustomMove();
+  const { moveToList, refresh, moveToRead, moveToVocaList } = useCustomMove();
+  const { exceptionHandle } = useCustomLogin();
 
   useEffect(() => {
-    getList().then((data) => {
-      setServerData(data);
-    });
+    getList()
+      .then((data) => {
+        setServerData(data);
+      })
+      .catch((err) => exceptionHandle(err));
   }, [refresh]);
 
   return (
@@ -21,7 +26,7 @@ const ListComponent = () => {
             <div
               key={folder.fid}
               className="w-full min-w-[400px] p-2 m-2 rounded shadow-md"
-              onClick={() => moveToRead(folder.fid)}
+              onClick={() => moveToVocaList(folder.fid)}
             >
               <div className="flex ">
                 <div className="font-extrabold text-2xl p-2 w-1/12">

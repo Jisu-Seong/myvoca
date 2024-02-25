@@ -60,7 +60,21 @@ const useCustomMove = () => {
     });
   };
 
-  return { moveToList, moveToModify, moveToRead, page, size, refresh };
+  const moveToVocaList = (fid) => {
+    navigate({
+      pathname: `/voca/list/${fid}`,
+    });
+  };
+
+  return {
+    moveToList,
+    moveToModify,
+    moveToRead,
+    moveToVocaList,
+    page,
+    size,
+    refresh,
+  };
 };
 
 export default useCustomMove;

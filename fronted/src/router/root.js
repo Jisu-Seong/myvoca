@@ -2,14 +2,13 @@ import { Suspense, lazy } from "react";
 import memberRouter from "./memberRouter";
 import folderRouter from "./folderRouter";
 import vocaRouter from "./vocaRouter";
-
 const { createBrowserRouter } = require("react-router-dom");
 
 const Loading = <div>Loading...</div>;
 const Main = lazy(() => import("../pages/MainPage"));
 const About = lazy(() => import("../pages/AboutPage"));
-const VocaIndex = lazy(() => import("../pages/voca/IndexPage"));
 const FolderList = lazy(() => import("../pages/folder/IndexPage"));
+const VocaList = lazy(() => import("../pages/voca/IndexPage"));
 
 const root = createBrowserRouter([
   {
@@ -41,7 +40,7 @@ const root = createBrowserRouter([
     path: "voca",
     element: (
       <Suspense fallback={Loading}>
-        <VocaIndex />
+        <VocaList />
       </Suspense>
     ),
     children: vocaRouter(),

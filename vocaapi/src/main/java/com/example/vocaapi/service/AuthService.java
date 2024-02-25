@@ -10,8 +10,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.vocaapi.dto.JoinRequestDTO;
 import com.example.vocaapi.dto.MemberDTO;
-import com.example.vocaapi.entity.JoinRequestDTO;
 import com.example.vocaapi.entity.Member;
 import com.example.vocaapi.repository.MemberRepository;
 
@@ -30,9 +30,13 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
     public boolean join(JoinRequestDTO joinRequestDTO) {
-        Optional<Member> result = memberRepository.findByEmail(joinRequestDTO.getEmail());
-        if (result == null) {
-            Member.toMember(joinRequestDTO, passwordEncoder);
+        int num = memberRepository.isExistEmail(joinRequestDTO.getEmail());
+        System.out.println(num);
+        log.info(num);
+
+        if (num == 0) {
+            Member member = Member.toMember(joinRequestDTO, passwordEncoder);
+            memberRepository.save(member);
             return true;
         } else {
             return false;

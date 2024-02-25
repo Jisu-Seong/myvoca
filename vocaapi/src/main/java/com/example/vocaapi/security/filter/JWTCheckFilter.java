@@ -2,6 +2,8 @@ package com.example.vocaapi.security.filter;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +37,7 @@ public class JWTCheckFilter extends OncePerRequestFilter {
         log.info("check uri................." + path);
 
         // api/member/의 경로의 호출은 체크하지 않음
-        if (path.startsWith("/api/member")) {
+        if (path.startsWith("/api/member/")) {
             return true;
         }
 

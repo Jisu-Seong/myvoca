@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.vocaapi.dto.FolderRequestDTO;
 import com.example.vocaapi.dto.FolderResponseDTO;
+import com.example.vocaapi.dto.PageResponseDTO;
 import com.example.vocaapi.service.FolderService;
 
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,6 @@ public class FolderController {
         List<FolderResponseDTO> result = folderService.getFolderBySecurity(principal);
         log.info(result);
         return result;
-
     }
 
     @GetMapping("/{fid}")

@@ -48,21 +48,57 @@ public class VocaService {
     private final TagRepository tRepository;
 
     // 폴더당 보카 리스트 수정요
-    public PageResponseDTO<VocaResponseDTO> getVocaList(Long fid, Principal principal,
-            SortRequestDTO sortRequestDTO, int page, int size) {
+    // public PageResponseDTO<VocaResponseDTO> getVocaList(Long fid, Principal
+    // principal,
+    // SortRequestDTO sortRequestDTO, int page, int size) {
+    // Optional<Member> result = memberRepository.findByEmail(principal.getName());
+    // Member member = result.orElseThrow();
+
+    // Folder folder = folderRepository.getReferenceById(fid);
+
+    // if (member == folder.getMember()) {
+    // SortRequestDTO convertSort = convertNullSort(sortRequestDTO);
+    // Sort sort = Sort.by(convertSort.isAsc() ? Sort.Direction.ASC :
+    // Sort.Direction.DESC,
+    // convertSort.getSortname());
+    // Pageable pageable = PageRequest.of(page, size, sort);
+    // Page<Vocabulary> pages = vRepository.findByFid(fid,
+    // pageable);
+
+    // List<Vocabulary> list = pages.getContent();
+    // long totalElements = pages.getTotalElements();
+    // int totalPages = pages.getTotalPages();
+    // int currentPage = pages.getNumber();
+
+    // List<VocaResponseDTO> resList = list.stream().map(x -> VocaResponseDTO.of(x))
+    // .collect(Collectors.toList());
+
+    // return new PageResponseDTO<VocaResponseDTO>(resList, totalElements,
+    // totalPages,
+    // currentPage);
+
+    // } else {
+    // return null;
+    // }
+
+    // }
+
+    public PageResponseDTO<VocaResponseDTO> getVocaList(Principal principal,
+            Long fid, String sortname, int page, int size) {
         Optional<Member> result = memberRepository.findByEmail(principal.getName());
         Member member = result.orElseThrow();
-
-        Folder folder = folderRepository.getReferenceById(fid);
-
-        if (folder != null && member.getEmail().equals(folder.getMember().getEmail())) {
-            SortRequestDTO convertSort = convertNullSort(sortRequestDTO);
-            Sort sort = Sort.by(convertSort.isAsc() ? Sort.Direction.ASC : Sort.Direction.DESC,
-                    convertSort.getSortname());
+        Folder folder = null;
+        if (fid == null) {
+            Optional<Folder> result2 = folderRepository.getOneFolderByMember(member.getEmail());
+            folder = result2.orElseThrow();
+        } else {
+            folder = folderRepository.getReferenceById(fid);
+        }
+        if (member == folder.getMember()) {
+            Sort sort = Sort.by(isASC(sortname) ? Sort.Direction.ASC : Sort.Direction.DESC, sortname);
             Pageable pageable = PageRequest.of(page, size, sort);
-            Page<Vocabulary> pages = vRepository.findByMarked(convertSort.isMarked(),
-                    pageable);
 
+            Page<Vocabulary> pages = vRepository.findByFid(fid, pageable);
             List<Vocabulary> list = pages.getContent();
             long totalElements = pages.getTotalElements();
             int totalPages = pages.getTotalPages();
@@ -71,38 +107,53 @@ public class VocaService {
             List<VocaResponseDTO> resList = list.stream().map(x -> VocaResponseDTO.of(x))
                     .collect(Collectors.toList());
 
-            return new PageResponseDTO<VocaResponseDTO>(resList, totalElements, totalPages,
+            return new PageResponseDTO<VocaResponseDTO>(resList, totalElements,
+                    totalPages,
                     currentPage);
-
+        } else {
+            throw new RuntimeException("유저 정보가 일치하지 않습니다.");
         }
-        return null;
     }
 
-    private SortRequestDTO convertNullSort(SortRequestDTO sortRequestDTO) {
-        boolean marked = false;
-        String sortname = "updatedAt";
-        boolean asc = false;
-        if (sortRequestDTO != null) {
-            if (sortRequestDTO.getSortname() != null) {
-                sortname = sortRequestDTO.getSortname();
-            }
-            marked = sortRequestDTO.isMarked();
-            asc = sortRequestDTO.isAsc();
+    private boolean isASC(String sortname) {
+        switch (sortname) {
+            case "vocaname":
+                return true;
+            case "createdAt":
+                return true;
+            case "updatedAt":
+                return false;
+            default:
+                return true;
         }
-        return new SortRequestDTO(marked, sortname, asc);
-
     }
+
+    // private SortRequestDTO convertNullSort(SortRequestDTO sortRequestDTO) {
+    // boolean marked = false;
+    // String sortname = "updatedAt";
+    // boolean asc = false;
+    // if (sortRequestDTO != null) {
+    // if (sortRequestDTO.getSortname() != null) {
+    // sortname = sortRequestDTO.getSortname();
+    // }
+    // marked = sortRequestDTO.isMarked();
+    // asc = sortRequestDTO.isAsc();
+    // }
+    // return new SortRequestDTO(marked, sortname, asc);
+
+    // }
 
     // 보카 상세 o
     public VocaResponseDTO getOneVoca(Long vid, Principal principal) {
         Optional<Member> memberResult = memberRepository.findByEmail(principal.getName());
         Member member = memberResult.orElseThrow();
 
-        Optional<Vocabulary> result = vRepository.findByVid(vid);
-        Vocabulary vocabulary = result.orElseThrow();
-        Folder folder = vocabulary.getFolder();
-        if (folder != null && member.getEmail().equals(folder.getMember().getEmail())) {
-            return VocaResponseDTO.of(vocabulary);
+        Vocabulary vocabulary = vRepository.findByVid(vid);
+        if (vocabulary != null) {
+            Folder folder = vocabulary.getFolder();
+            if (folder != null && member.getEmail().equals(folder.getMember().getEmail())) {
+                return VocaResponseDTO.of(vocabulary);
+            }
         }
         return null;
     }
@@ -112,11 +163,12 @@ public class VocaService {
         Optional<Member> memberResult = memberRepository.findByEmail(principal.getName());
         Member member = memberResult.orElseThrow();
 
-        Optional<Vocabulary> result = vRepository.findByVid(vid);
-        Vocabulary vocabulary = result.orElseThrow();
-        Folder folder = vocabulary.getFolder();
-        if (folder != null && member.getEmail().equals(folder.getMember().getEmail())) {
-            vRepository.deleteById(vid);
+        Vocabulary vocabulary = vRepository.findByVid(vid);
+        if (vocabulary != null) {
+            Folder folder = vocabulary.getFolder();
+            if (folder != null && member.getEmail().equals(folder.getMember().getEmail())) {
+                vRepository.deleteById(vid);
+            }
         }
     }
 
@@ -125,15 +177,16 @@ public class VocaService {
         Optional<Member> memberResult = memberRepository.findByEmail(principal.getName());
         Member member = memberResult.orElseThrow();
 
-        Optional<Vocabulary> result = vRepository.findByVid(vid);
-        Vocabulary v = result.orElseThrow();
-        Folder folder = v.getFolder();
-        if (folder != null && member.getEmail().equals(folder.getMember().getEmail())) {
-            v.changeVocaname(vocaRequestDTO.getVocaname());
-            v.changeMeanings(vocaRequestDTO.getMeaning());
-            v.changeSentence(vocaRequestDTO.getSentence());
-            v.changeMark(vocaRequestDTO.isMarked());
-            v.changeUpdateAt();
+        Vocabulary v = vRepository.findByVid(vid);
+        if (v != null) {
+            Folder folder = v.getFolder();
+            if (folder != null && member.getEmail().equals(folder.getMember().getEmail())) {
+                v.changeVocaname(vocaRequestDTO.getVocaname());
+                v.changeMeanings(vocaRequestDTO.getMeaning());
+                v.changeSentence(vocaRequestDTO.getSentence());
+                v.changeMark(vocaRequestDTO.isMarked());
+                v.changeUpdateAt();
+            }
         }
 
     }
@@ -144,7 +197,8 @@ public class VocaService {
         Optional<Member> memberResult = memberRepository.findByEmail(principal.getName());
         Member member = memberResult.orElseThrow();
 
-        Folder folder = folderRepository.getReferenceById(fid);
+        Optional<Folder> result = folderRepository.findByFid(fid);
+        Folder folder = result.orElseThrow();
         if (folder != null && member.getEmail().equals(folder.getMember().getEmail())) {
             Vocabulary voca = Vocabulary.builder()
                     .folder(folder)
@@ -165,8 +219,7 @@ public class VocaService {
         Optional<Member> memberResult = memberRepository.findByEmail(principal.getName());
         Member member = memberResult.orElseThrow();
 
-        Optional<Vocabulary> result = vRepository.findByVid(vid);
-        Vocabulary v = result.orElseThrow();
+        Vocabulary v = vRepository.findByVid(vid);
         Folder folder = v.getFolder();
 
         if (folder != null && member.getEmail().equals(folder.getMember().getEmail())) {
@@ -181,12 +234,19 @@ public class VocaService {
 
     // 관계 추가
     public void addRelation(Long vid, List<String> tags) {
-        Vocabulary v = vRepository.getReferenceById(vid);
+        log.info("==============Voca Service===============");
+        log.info("브이아이디: " + vid);
+        log.info("태그들: " + tags);
+        Optional<Vocabulary> result = vRepository.findById(vid).ofNullable(null);
+        Vocabulary v = result.orElseGet(null);
+        log.info("단어들: " + v);
         for (String tag : tags) {
-            Optional<Tag> result = tRepository.findByTagname(tag);
-            if (result != null) {
-                Tag t = result.orElseThrow();
+            log.info("==============result전===============");
+            Tag t = tRepository.findByTagname(tag);
+            if (t != null && v != null) {
+                log.info("==============result후===============");
                 rRepository.save(new Relation(v, t));
+                log.info("==============result save후===============");
             }
         }
 
@@ -199,7 +259,7 @@ public class VocaService {
 
     // 태그가 존재하는지 확인
     public boolean isExistTag(String tag) {
-        Optional<Tag> result = tRepository.findByTagname(tag);
+        Tag result = tRepository.findByTagname(tag);
         if (result == null) {
             return false;
         }
@@ -216,7 +276,7 @@ public class VocaService {
     // 태그 추가
     public void addTags(List<String> tags) {
         for (String s : tags) {
-            Optional<Tag> result = tRepository.findByTagname(s);
+            Tag result = tRepository.findByTagname(s);
             if (result == null) {
                 tRepository.save(new Tag(s));
             }
@@ -226,9 +286,10 @@ public class VocaService {
     // 태그 삭제
     public void deleteTags(List<String> tags) {
         for (String s : tags) {
-            Optional<Tag> result = tRepository.findByTagname(s);
-            Tag t = result.orElseThrow();
-            tRepository.delete(t);
+            Tag result = tRepository.findByTagname(s);
+            if (result != null) {
+                tRepository.delete(result);
+            }
         }
     }
 

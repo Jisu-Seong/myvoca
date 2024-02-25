@@ -18,6 +18,6 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
 
     // 클래스 이름에 대하여 존재하는지 찾기
     @Query(value = "select * from tag where tagname = :tagname", nativeQuery = true)
-    Optional<Tag> findByTagname(String tagname);
+    Tag findByTagname(String tagname);
 
 }

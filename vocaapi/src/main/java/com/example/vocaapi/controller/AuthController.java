@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.vocaapi.entity.JoinRequestDTO;
+import com.example.vocaapi.dto.JoinRequestDTO;
 import com.example.vocaapi.service.AuthService;
 
 import jakarta.validation.Valid;
@@ -22,7 +22,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/api/member/join")
-    public Map<String, String> join(@ModelAttribute @Valid JoinRequestDTO joinRequestDTO) {
+    public Map<String, String> join(@ModelAttribute JoinRequestDTO joinRequestDTO) {
         String email = joinRequestDTO.getEmail();
         String password = joinRequestDTO.getPassword();
         log.info("==========================join request info============================");

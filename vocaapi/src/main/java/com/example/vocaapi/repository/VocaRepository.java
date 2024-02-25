@@ -25,9 +25,11 @@ public interface VocaRepository extends JpaRepository<Vocabulary, Long> {
 
     // 특정 단어 코드로 단어 정보 조회
     // 한 태그에 대한 단어 리스트 조회를 위함
-    Optional<Vocabulary> findByVid(Long vid);
+    @Query(value = "select * from vocabulary v where v.vid = :vid", nativeQuery = true)
+    Vocabulary findByVid(Long vid);
 
-    Page<Vocabulary> findByMarked(boolean isMarked, Pageable pageable);
+    @Query(value = "select * from vocabulary where fid = :fid", nativeQuery = true)
+    Page<Vocabulary> findByFid(Long fid, Pageable pageable);
 
     // 단어 추가
 

@@ -24,27 +24,39 @@ import com.example.vocaapi.dto.VocaResponseDTO;
 import com.example.vocaapi.service.VocaService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/voca")
 @Transactional
+@Log4j2
 public class VocaController {
     private final VocaService vocaService;
 
+    // @GetMapping("/list/{fid}")
+    // public ResponseEntity<PageResponseDTO<VocaResponseDTO>> getVocaListFolder(
+    // Principal principal,
+    // @PathVariable(name = "fid") Long fid,
+    // @RequestBody SortRequestDTO sortRequestDTO,
+    // @RequestParam(defaultValue = "0") int page,
+    // @RequestParam(defaultValue = "10") int size) {
+
+    // return new ResponseEntity<>(
+    // vocaService.getVocaList(fid, principal,
+    // sortRequestDTO, page, size),
+    // HttpStatus.OK);
+    // }
+
     @GetMapping("/list/{fid}")
-    public ResponseEntity<PageResponseDTO<VocaResponseDTO>> getVocaListFolder(
+    public ResponseEntity<PageResponseDTO<VocaResponseDTO>> getVocaAllList(
             Principal principal,
             @PathVariable(name = "fid") Long fid,
-            @RequestBody SortRequestDTO sortRequestDTO,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-
-        return new ResponseEntity<>(
-                vocaService.getVocaList(fid, principal,
-                        sortRequestDTO, page, size),
-                HttpStatus.OK);
-
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(name = "sort") String sort) {
+        return new ResponseEntity<>(vocaService.getVocaList(principal, fid, sort,
+                page, size), HttpStatus.OK);
     }
 
     @GetMapping("/{vid}")
@@ -54,7 +66,7 @@ public class VocaController {
         return vocaService.getOneVoca(vid, principal);
     }
 
-    @GetMapping("/{vid}/tags")
+    @GetMapping("/tags/{vid}")
     public List<String> getTagsOneVoca(
             Principal principal,
             @PathVariable(name = "vid") Long vid) {
@@ -62,18 +74,24 @@ public class VocaController {
     }
 
     @PostMapping("/add/{fid}")
-    public Map<String, String> addVoca(
+    public Map<String, Long> addVoca(
             Principal principal,
             @PathVariable(name = "fid") Long fid,
             @RequestBody VocaFormDTO vocaFormDTO) {
+        log.info("form responseDTO ========================");
+        log.info(vocaFormDTO);
         VocaResponseDTO vocaResponseDTO = vocaService.addVoca(fid,
                 vocaFormDTO.getVocaRequestDTO(), principal);
+        log.info("보카 responseDTO ========================");
+        log.info(vocaResponseDTO);
         vocaService.addTags(vocaFormDTO.getTags());
+        log.info("태그 입력 =======================================");
         vocaService.addRelation(vocaResponseDTO.getVid(), vocaFormDTO.getTags());
-        return Map.of("RESULT", "SUCCESS");
+        log.info("add relation ================================");
+        return Map.of("vid", vocaResponseDTO.getVid());
     }
 
-    @PutMapping("/{vid}/modify")
+    @PutMapping("/modify/{vid}")
     public Map<String, String> modifyVoca(
             Principal principal,
             @PathVariable(name = "vid") Long vid,
