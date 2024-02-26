@@ -13,6 +13,7 @@ import lombok.*;
 @Builder
 public class VocaResponseDTO {
     private Long vid;
+    private Long fid;
     private String vocaname;
     private boolean isMarked;
     private LocalDateTime createdAt;
@@ -24,6 +25,7 @@ public class VocaResponseDTO {
     public static VocaResponseDTO of(Vocabulary vocabulary) {
         return VocaResponseDTO.builder()
                 .vid(vocabulary.getVid())
+                .fid(vocabulary.getFolder().getFid())
                 .vocaname(vocabulary.getVocaname())
                 .isMarked(vocabulary.isMarked())
                 .createdAt(vocabulary.getCreatedAt())

@@ -1,61 +1,55 @@
 import { useCallback, useEffect, useState } from "react";
-import { getOne } from "../../api/folderApi";
-import useCustomMove from "../../hooks/useCustomMove";
-import { useNavigate } from "react-router-dom";
-import { Navigate } from "react-router-dom";
+import { getOne } from "../../api/vocaApi";
+import { useNavigate, Navigate } from "react-router-dom";
+import useCustomMove from "./../../hooks/useCustomMove";
 
 const initState = {
+  vid: 0,
   fid: 0,
-  foldername: "",
+  vocaname: 0,
+  meaning: "",
+  sentence: "",
+  isMarked: false,
   createdAt: "",
   updatedAt: "",
+  tags: [],
 };
 
-const ReadComponent = ({ fid }) => {
+const ReadComponent = ({ vid }, { fid }) => {
   const navigate = useNavigate();
-  const [folder, setFolder] = useState(initState);
-
-  const { moveToList, moveToModify, moveToVocaList } = useCustomMove();
-
-  const handleMoveVocaList = () => {
-    moveToVocaList(fid);
-  };
+  const [voca, setVoca] = useState(initState);
+  const { moveToVocaList, moveToVocaModify } = useCustomMove();
 
   useEffect(() => {
-    getOne(fid).then((data) => {
+    getOne(vid).then((data) => {
       console.log(data);
-      setFolder(data);
+      setVoca(data);
     });
-  }, [fid]);
+  }, [vid]);
 
   return (
     <div className="border-2 border-sky-200 mt-10 m-2 p-4 ">
-      {makeDiv("fid", folder.fid)}
-      {makeDiv("foldername", folder.foldername)}
-      {makeDiv("createdAt", folder.createdAt)}
-      {makeDiv("updatedAt", folder.updatedAt)}
+      {makeDiv("fid", voca.fid)}
+      {makeDiv("vid", voca.vid)}
+      {makeDiv("vocaname", voca.vocaname)}
+      {makeDiv("meaning", voca.meaning)}
+      {makeDiv("sentence", voca.sentence)}
+      {makeDiv("createdAt", voca.createdAt)}
+      {makeDiv("updatedAt", voca.updatedAt)}
 
       <div className="flex justify-end p-4">
         <button
           type="button"
           className="rounded p-4 m-2 text-xl w-32 text-white bg-orange-500"
-          onClick={() => handleMoveVocaList(fid)}
+          onClick={() => moveToVocaList(voca.fid)}
         >
           To Voca List
         </button>
 
         <button
           type="button"
-          className="rounded p-4 m-2 text-xl w-32 text-white bg-blue-500"
-          onClick={() => moveToList()}
-        >
-          Folder List
-        </button>
-
-        <button
-          type="button"
           className="rounded p-4 m-2 text-xl w-32 text-white bg-red-500"
-          onClick={() => moveToModify(fid)}
+          onClick={() => moveToVocaModify(voca.vid, voca.fid)}
         >
           Modify
         </button>
@@ -74,4 +68,5 @@ const makeDiv = (title, value) => (
     </div>
   </div>
 );
+
 export default ReadComponent;

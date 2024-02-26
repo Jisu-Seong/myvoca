@@ -3,7 +3,7 @@ import ResultModal from "../common/ResultModal";
 import useCustomMove from "./../../hooks/useCustomMove";
 import { postAdd } from "../../api/vocaApi";
 import { styled } from "styled-components";
-import { useParams } from "react-router-dom";
+import { useParams, Navigate } from "react-router-dom";
 
 const initState = {
   vocaname: "",
@@ -23,7 +23,6 @@ const vocaFormDTO = {
 const AddComponent = () => {
   const [voca, setVoca] = useState({ ...initState });
   const [result, setResult] = useState(null);
-  const { moveToList } = useCustomMove();
   const { fid } = useParams();
 
   const [tagItem, setTagItem] = useState("");
@@ -74,7 +73,7 @@ const AddComponent = () => {
 
   const closeModal = () => {
     setResult(null);
-    moveToList();
+    <Navigate replace to="voca/list/1" />;
   };
 
   return (

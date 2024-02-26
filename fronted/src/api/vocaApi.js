@@ -13,6 +13,11 @@ export const getList = async (fid) => {
   return res;
 };
 
+export const getListAll = async () => {
+  const res = await jwtAxios.get(`${prefix}/list/all`);
+  return res;
+};
+
 export const postAdd = async (fid, voca) => {
   const res = await jwtAxios.post(`${prefix}/add/${fid}`, voca);
   return res.data;

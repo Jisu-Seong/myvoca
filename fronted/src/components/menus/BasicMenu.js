@@ -15,7 +15,7 @@ const BasicMenu = () => {
             <Link to={"/folder/list"}>folder</Link>
           </li>
           <li className="pr-6 text-2xl">
-            <Link to={"/voca/list"}>voca</Link>
+            <Link to={"/voca/list/all"}>voca</Link>
           </li>
           <li className="pr-6 text-2xl">
             <Link to={"/member/mypage/"}>mypage</Link>

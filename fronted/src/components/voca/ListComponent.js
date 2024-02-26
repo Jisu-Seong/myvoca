@@ -4,23 +4,28 @@ import useCustomMove from "../../hooks/useCustomMove";
 import jwtAxios from "./../../util/jwtUtil";
 import FetchingModal from "../common/FetchingModal";
 import useCustomLogin from "./../../hooks/useCustomLogin";
-import { getList } from "../../api/vocaApi";
+import { getList, getListAll } from "../../api/vocaApi";
 
 const ListComponent = () => {
   const { fid } = useParams();
   const [serverData, setServerData] = useState([]);
-  const { moveToList, refresh, moveToRead, moveToVocaList } = useCustomMove();
+  const { moveToList, refresh, moveToVocaRead, moveToVocaList } =
+    useCustomMove();
   const { exceptionHandle } = useCustomLogin();
 
   useEffect(() => {
-    getList(fid)
-      .then((result) => {
-        if (result) {
-          console.log(result.data.dtoList);
-          setServerData(result.data.dtoList);
-        }
-      })
-      .catch((err) => exceptionHandle(err));
+    if (fid === undefined) {
+      console.log("fid is undefined");
+    } else {
+      getList(fid)
+        .then((result) => {
+          if (result) {
+            console.log(result.data.dtoList);
+            setServerData(result.data.dtoList);
+          }
+        })
+        .catch((err) => exceptionHandle(err));
+    }
   }, [refresh]);
 
   return (
@@ -31,6 +36,7 @@ const ListComponent = () => {
             <div
               key={voca.vid}
               className="w-full min-w-[400px] p-2 m-2 rounded shadow-md"
+              onClick={() => moveToVocaRead(voca.vid, voca.fid)}
             >
               <div className="flex ">
                 <div className="font-extrabold text-2xl p-2 w-1/12">

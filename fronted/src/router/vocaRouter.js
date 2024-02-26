@@ -4,11 +4,21 @@ import { Navigate } from "react-router-dom";
 const Loading = <div>Loading...</div>;
 const ListPage = lazy(() => import("../pages/voca/ListPage"));
 const AddPage = lazy(() => import("../pages/voca/AddPage"));
+const ReadPage = lazy(() => import("../pages/voca/ReadPage"));
+const ModifyPage = lazy(() => import("../pages/voca/ModifyPage"));
 
 const vocaRouter = () => {
   return [
     {
-      path: "list",
+      path: "list/all",
+      element: (
+        <Suspense fallback={Loading}>
+          <ListPage />
+        </Suspense>
+      ),
+    },
+    {
+      path: "list/:fid",
       element: (
         <Suspense fallback={Loading}>
           <ListPage />
@@ -17,7 +27,7 @@ const vocaRouter = () => {
     },
     {
       path: "",
-      element: <Navigate replace to="list/" />,
+      element: <Navigate replace to="list" />,
     },
     {
       path: "add/:fid",
@@ -27,22 +37,22 @@ const vocaRouter = () => {
         </Suspense>
       ),
     },
-    // {
-    //   path: "read/:fid",
-    //   element: <Suspense fallback={Loading}></Suspense>,
-    // },
     {
-      path: "list/:fid",
+      path: ":fid/read/:vid",
       element: (
         <Suspense fallback={Loading}>
-          <ListPage />
+          <ReadPage />
         </Suspense>
       ),
     },
-    // {
-    //   path: "modify/:fid",
-    //   element: <Suspense fallback={Loading}></Suspense>,
-    // },
+    {
+      path: ":fid/modify/:vid",
+      element: (
+        <Suspense fallback={Loading}>
+          <ModifyPage />
+        </Suspense>
+      ),
+    },
   ];
 };
 

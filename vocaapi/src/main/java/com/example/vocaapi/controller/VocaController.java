@@ -79,21 +79,16 @@ public class VocaController {
         return Map.of("vocaResponseDTO", vocaResponseDTO);
     }
 
-    // @PutMapping("/modify/{vid}")
-    // public Map<String, String> modifyVoca(
-    // Principal principal,
-    // @PathVariable(name = "vid") Long vid,
-    // @RequestBody VocaFormDTO vocaFormDTO) {
-    // vocaService.deleteRelation(vid);
-    // Vocabulary v = vocaService.modifyVoca(vid, vocaFormDTO.getVocaRequestDTO(),
-    // principal);
-    // List<String> newTags =
-    // vocaService.compareTagList(vocaService.findAllTagsByVoca(vid, principal),
-    // vocaFormDTO.getTags());
-    // vocaService.addTags(newTags);
-    // vocaService.addRelation(v, vocaFormDTO.getTags());
-    // return Map.of("RESULT", "SUCCESS");
-    // }
+    @PutMapping("/modify/{vid}")
+    public Map<String, String> modifyVoca(
+            Principal principal,
+            @PathVariable(name = "vid") Long vid,
+            @RequestBody VocaFormDTO vocaFormDTO) {
+        Vocabulary v = vocaService.modifyVoca(vid, vocaFormDTO.getVocaRequestDTO(),
+                principal);
+        vocaService.addTags(vocaFormDTO.getTags());
+        return Map.of("RESULT", "SUCCESS");
+    }
 
     // @DeleteMapping("/{vid}")
     // public Map<String, String> deleteVoca(

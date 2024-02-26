@@ -9,7 +9,7 @@ const IndexPage = () => {
   const navigate = useNavigate();
 
   const handleClickList = useCallback(() => {
-    navigate({ pathname: "list" });
+    navigate({ pathname: `list/${fid}` });
   });
 
   const handleClickAdd = useCallback(() => {

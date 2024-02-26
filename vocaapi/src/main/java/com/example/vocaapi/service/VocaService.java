@@ -42,9 +42,31 @@ public class VocaService {
     private final MemberRepository memberRepository;
     private final FolderRepository folderRepository;
     private final VocaRepository vRepository;
-    // private final RelationRepository rRepository;
     private final TagRepository tRepository;
 
+    // 보카 추가
+    public Vocabulary addVoca(Long fid, VocaRequestDTO vocaRequestDTO, List<Tag> tags,
+            Principal principal) {
+        Optional<Member> memberResult = memberRepository.findByEmail(principal.getName());
+        Member member = memberResult.orElseThrow();
+
+        Optional<Folder> result = folderRepository.findByFid(fid);
+        Folder folder = result.orElseThrow();
+        if (folder != null && member.getEmail().equals(folder.getMember().getEmail())) {
+            Vocabulary voca = Vocabulary.builder()
+                    .folder(folder)
+                    .vocaname(vocaRequestDTO.getVocaname())
+                    .meaning(vocaRequestDTO.getMeaning())
+                    .sentence(vocaRequestDTO.getSentence())
+                    .isMarked(vocaRequestDTO.isMarked())
+                    .tags(tags)
+                    .build();
+            return vRepository.save(voca);
+        }
+        return null;
+    }
+
+    // 한 폴더당 보카 리스트
     public PageResponseDTO<VocaResponseDTO> getVocaList(Principal principal,
             Long fid, String sortname, int page, int size) {
         Optional<Member> result = memberRepository.findByEmail(principal.getName());
@@ -89,6 +111,8 @@ public class VocaService {
                 return true;
         }
     }
+
+    // 한 태그에 해당하는 모든 보카 조회
 
     // 보카 상세 o
     public VocaResponseDTO getOneVoca(Long vid, Principal principal) {
@@ -138,30 +162,6 @@ public class VocaService {
         return v;
 
     }
-
-    // 보카 추가
-    public Vocabulary addVoca(Long fid, VocaRequestDTO vocaRequestDTO, List<Tag> tags,
-            Principal principal) {
-        Optional<Member> memberResult = memberRepository.findByEmail(principal.getName());
-        Member member = memberResult.orElseThrow();
-
-        Optional<Folder> result = folderRepository.findByFid(fid);
-        Folder folder = result.orElseThrow();
-        if (folder != null && member.getEmail().equals(folder.getMember().getEmail())) {
-            Vocabulary voca = Vocabulary.builder()
-                    .folder(folder)
-                    .vocaname(vocaRequestDTO.getVocaname())
-                    .meaning(vocaRequestDTO.getMeaning())
-                    .sentence(vocaRequestDTO.getSentence())
-                    .isMarked(vocaRequestDTO.isMarked())
-                    .tags(tags)
-                    .build();
-            return vRepository.save(voca);
-        }
-        return null;
-    }
-
-    // 한 태그에 해당하는 모든 보카 조회
 
     // 한 단어에 해당되는 모든 태그 조회
 
