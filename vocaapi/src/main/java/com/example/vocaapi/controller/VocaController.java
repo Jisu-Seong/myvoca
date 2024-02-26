@@ -35,29 +35,24 @@ import lombok.extern.log4j.Log4j2;
 public class VocaController {
     private final VocaService vocaService;
 
-    // @GetMapping("/list/{fid}")
-    // public ResponseEntity<PageResponseDTO<VocaResponseDTO>> getVocaListFolder(
-    // Principal principal,
-    // @PathVariable(name = "fid") Long fid,
-    // @RequestBody SortRequestDTO sortRequestDTO,
-    // @RequestParam(defaultValue = "0") int page,
-    // @RequestParam(defaultValue = "10") int size) {
-
-    // return new ResponseEntity<>(
-    // vocaService.getVocaList(fid, principal,
-    // sortRequestDTO, page, size),
-    // HttpStatus.OK);
-    // }
-
     @GetMapping("/list/{fid}")
     public ResponseEntity<PageResponseDTO<VocaResponseDTO>> getVocaAllList(
             Principal principal,
             @PathVariable(name = "fid") Long fid,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(name = "sort") String sort) {
+            @RequestParam(name = "sort", defaultValue = "updated_At") String sort) {
         return new ResponseEntity<>(vocaService.getVocaList(principal, fid, sort,
                 page, size), HttpStatus.OK);
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<PageResponseDTO<VocaResponseDTO>> getVocaAllFolderList(
+            Principal principal,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(name = "sort", defaultValue = "updated_At") String sort) {
+        return new ResponseEntity<>(null);
     }
 
     @GetMapping("/{vid}")
@@ -66,13 +61,6 @@ public class VocaController {
             @PathVariable(name = "vid") Long vid) {
         return vocaService.getOneVoca(vid, principal);
     }
-
-    // @GetMapping("/tags/{vid}")
-    // public List<String> getTagsOneVoca(
-    // Principal principal,
-    // @PathVariable(name = "vid") Long vid) {
-    // return vocaService.findAllTagsByVoca(vid, principal);
-    // }
 
     @PostMapping("/add/{fid}")
     public Map<String, Object> addVoca(
@@ -116,4 +104,10 @@ public class VocaController {
     // return Map.of("RESULT", "SUCCESS");
     // }
 
+    // @GetMapping("/tags/{vid}")
+    // public List<String> getTagsOneVoca(
+    // Principal principal,
+    // @PathVariable(name = "vid") Long vid) {
+    // return vocaService.findAllTagsByVoca(vid, principal);
+    // }
 }

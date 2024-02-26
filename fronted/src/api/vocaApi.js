@@ -9,8 +9,8 @@ export const getOne = async (vid) => {
 };
 
 export const getList = async (fid) => {
-  const res = await jwtAxios.get(`${prefix}/list/{fid}`);
-  return res.data;
+  const res = await jwtAxios.get(`${prefix}/list/${fid}`);
+  return res;
 };
 
 export const postAdd = async (fid, voca) => {

@@ -45,50 +45,14 @@ public class VocaService {
     // private final RelationRepository rRepository;
     private final TagRepository tRepository;
 
-    // 폴더당 보카 리스트 수정요
-    // public PageResponseDTO<VocaResponseDTO> getVocaList(Long fid, Principal
-    // principal,
-    // SortRequestDTO sortRequestDTO, int page, int size) {
-    // Optional<Member> result = memberRepository.findByEmail(principal.getName());
-    // Member member = result.orElseThrow();
-
-    // Folder folder = folderRepository.getReferenceById(fid);
-
-    // if (member == folder.getMember()) {
-    // SortRequestDTO convertSort = convertNullSort(sortRequestDTO);
-    // Sort sort = Sort.by(convertSort.isAsc() ? Sort.Direction.ASC :
-    // Sort.Direction.DESC,
-    // convertSort.getSortname());
-    // Pageable pageable = PageRequest.of(page, size, sort);
-    // Page<Vocabulary> pages = vRepository.findByFid(fid,
-    // pageable);
-
-    // List<Vocabulary> list = pages.getContent();
-    // long totalElements = pages.getTotalElements();
-    // int totalPages = pages.getTotalPages();
-    // int currentPage = pages.getNumber();
-
-    // List<VocaResponseDTO> resList = list.stream().map(x -> VocaResponseDTO.of(x))
-    // .collect(Collectors.toList());
-
-    // return new PageResponseDTO<VocaResponseDTO>(resList, totalElements,
-    // totalPages,
-    // currentPage);
-
-    // } else {
-    // return null;
-    // }
-
-    // }
-
     public PageResponseDTO<VocaResponseDTO> getVocaList(Principal principal,
             Long fid, String sortname, int page, int size) {
         Optional<Member> result = memberRepository.findByEmail(principal.getName());
         Member member = result.orElseThrow();
         Folder folder = null;
         if (fid == null) {
-            Optional<Folder> result2 = folderRepository.getOneFolderByMember(member.getEmail());
-            folder = result2.orElseThrow();
+            Optional<Folder> result2 = folderRepository.getOneFolderByMember(member.getEmail()).ofNullable(null);
+            folder = result2.orElseGet(null);
         } else {
             folder = folderRepository.getReferenceById(fid);
         }
@@ -117,29 +81,14 @@ public class VocaService {
         switch (sortname) {
             case "vocaname":
                 return true;
-            case "createdAt":
+            case "created_At":
                 return true;
-            case "updatedAt":
+            case "updated_At":
                 return false;
             default:
                 return true;
         }
     }
-
-    // private SortRequestDTO convertNullSort(SortRequestDTO sortRequestDTO) {
-    // boolean marked = false;
-    // String sortname = "updatedAt";
-    // boolean asc = false;
-    // if (sortRequestDTO != null) {
-    // if (sortRequestDTO.getSortname() != null) {
-    // sortname = sortRequestDTO.getSortname();
-    // }
-    // marked = sortRequestDTO.isMarked();
-    // asc = sortRequestDTO.isAsc();
-    // }
-    // return new SortRequestDTO(marked, sortname, asc);
-
-    // }
 
     // 보카 상세 o
     public VocaResponseDTO getOneVoca(Long vid, Principal principal) {
@@ -215,47 +164,6 @@ public class VocaService {
     // 한 태그에 해당하는 모든 보카 조회
 
     // 한 단어에 해당되는 모든 태그 조회
-    // public List<String> findAllTagsByVoca(Long vid, Principal principal) {
-    // Optional<Member> memberResult =
-    // memberRepository.findByEmail(principal.getName());
-    // Member member = memberResult.orElseThrow();
-
-    // Vocabulary v = vRepository.findByVid(vid);
-    // Folder folder = v.getFolder();
-
-    // if (folder != null &&
-    // member.getEmail().equals(folder.getMember().getEmail())) {
-    // List<Relation> list = rRepository.findRelationByVid(v.getVid());
-    // if (list != null && list.size() != 0) {
-    // return list.stream().map(x ->
-    // x.getTag().getTagname()).collect(Collectors.toList());
-    // }
-    // }
-    // return null;
-
-    // }
-
-    // 관계 추가
-    // public void addRelation(Vocabulary voca, List<String> tags) {
-    // log.info("==============Voca Service===============");
-    // log.info("보카: " + voca);
-    // log.info("태그들: " + tags);
-    // for (String tag : tags) {
-    // log.info("==============result전===============");
-    // Tag t = tRepository.findByTagname(tag);
-    // if (t != null && voca != null) {
-    // log.info("==============result후===============");
-    // rRepository.save(new Relation(voca, t));
-    // log.info("==============result save후===============");
-    // }
-    // }
-
-    // }
-
-    // 관계 삭제
-    // public void deleteRelation(Long vid) {
-    // rRepository.deleteRelationByVid(vid);
-    // }
 
     // 태그가 존재하는지 확인
     public boolean isExistTag(String tag) {
