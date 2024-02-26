@@ -19,19 +19,16 @@ const ListComponent = () => {
   }, [refresh]);
 
   return (
-    <div className="border-2 border-blue-100 mt-10 mr-2 ml-2">
-      <div className="flex flex-wrap mx-auto justify-center p-6">
+    <div className=" mt-10 mr-2 ml-2">
+      <div className="text-xl flex flex-wrap mx-auto justify-center p-6">
         {serverData ? (
           serverData.map((folder) => (
             <div
               key={folder.fid}
-              className="w-full min-w-[400px] p-2 m-2 rounded shadow-md"
+              className="w-full min-w-[400px] p-2 m-2 rounded shadow-md  bg-white"
               onClick={() => moveToVocaList(folder.fid)}
             >
-              <div className="flex ">
-                <div className="font-extrabold text-2xl p-2 w-1/12">
-                  {folder.fid}
-                </div>
+              <div className="flex  ">
                 <div className="text-1xl m-1 p-2 w-8/12 font-extrabold">
                   {folder.foldername}
                 </div>

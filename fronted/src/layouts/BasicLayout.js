@@ -4,8 +4,8 @@ const BasicLayout = ({ children }) => {
   return (
     <>
       <BasicMenu />
-      <div className="bg-white my-5 w-full flex justify-center space-y-4 md:space-y-0">
-        <main className="bg-sky-300 w-full lg:max-w-screen-md py-40">
+      <div className=" w-full flex justify-center md:space-y-0">
+        <main className="bg-teal-400 w-full lg:max-w-screen-md py-40">
           {children}
         </main>
       </div>

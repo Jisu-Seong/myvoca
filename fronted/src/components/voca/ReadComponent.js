@@ -28,13 +28,20 @@ const ReadComponent = ({ vid }, { fid }) => {
   }, [vid]);
 
   return (
-    <div className="border-2 border-sky-200 mt-10 m-2 p-4 ">
-      {makeDiv("fid", voca.fid)}
-      {makeDiv("vid", voca.vid)}
-      {makeDiv("vocaname", voca.vocaname)}
+    <div className=" bg-white mt-10 m-2 p-4 rounded">
+      {makeDiv("voca", voca.vocaname)}
       {makeDiv("meaning", voca.meaning)}
+      <div className="flex justify-center">
+        <div className="relative mb-4 flex w-full flex-wrap items-stretch">
+          <div className="w-1/5 p-6 text-rignt font-bold">tags</div>
+          {voca.tags.map((tag) => (
+            <div className="w-1/5 p-6 rounded-r border border-solid shadow-md">
+              <div>{tag}</div>
+            </div>
+          ))}
+        </div>
+      </div>
       {makeDiv("sentence", voca.sentence)}
-      {makeDiv("tags", voca.tags)}
       {makeDiv("createdAt", voca.createdAt)}
       {makeDiv("updatedAt", voca.updatedAt)}
 

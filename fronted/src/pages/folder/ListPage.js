@@ -11,7 +11,7 @@ const ListPage = () => {
   }
   return (
     <div>
-      <div className=" text-3xl">Folder List</div>
+      <div className="mx-10 text-3xl">Folder List</div>
       <ListComponent />
     </div>
   );

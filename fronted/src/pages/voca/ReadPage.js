@@ -5,11 +5,8 @@ const ReadPage = () => {
   const { fid } = useParams();
   const { vid } = useParams();
   return (
-    <div>
-      <div>Voca Read Page!</div>
-      <div>
-        <ReadComponent vid={vid} fid={fid} />
-      </div>
+    <div className="w-full flex justify-center">
+      <ReadComponent vid={vid} fid={fid} />
     </div>
   );
 };

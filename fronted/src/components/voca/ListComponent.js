@@ -29,30 +29,32 @@ const ListComponent = () => {
   }, [refresh]);
 
   return (
-    <div className="border-2 border-blue-100 mt-10 mr-2 ml-2">
-      <div className="flex flex-wrap mx-auto justify-center p-6">
+    <div className="mx-10 text-3xl">
+      Voca List - folder {fid}
+      <div className="text-xl flex flex-wrap mx-auto justify-centers m-5">
         {serverData ? (
           serverData.map((voca) => (
             <div
               key={voca.vid}
-              className="w-full min-w-[400px] p-2 m-2 rounded shadow-md"
+              className="w-full min-w-[400px] p-2 m-2 rounded shadow-md bg-white"
               onClick={() => moveToVocaRead(voca.vid, voca.fid)}
             >
               <div className="flex ">
-                <div className="font-extrabold text-2xl p-2 w-1/12">
-                  {voca.vid}
+                <div className="w-1/2 text-left">
+                  <div className="m-1 p-2 w-fullfont-extrabold align-middle bg-white">
+                    {voca.vocaname}
+                  </div>
                 </div>
-                <div className="text-1xl m-1 p-2 w-8/12 font-extrabold">
-                  {voca.vocaname}
-                </div>
-                <div className="text-1xl m-1 p-2 w-2/10 font-medium">
-                  {voca.meaning}
+                <div className="w-1/2">
+                  <div className="m-1 p-2 w-full font-medium bg-white">
+                    {voca.meaning}
+                  </div>
                 </div>
               </div>
             </div>
           ))
         ) : (
-          <div className="text-1xl m-1 p-2 w-8/12 font-extrabold">
+          <div className="text-1xl m-1 p-2 w-full font-extrabold">
             데이터가 없어요!
           </div>
         )}

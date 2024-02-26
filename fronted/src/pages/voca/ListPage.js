@@ -6,7 +6,6 @@ const ListPage = () => {
 
   return (
     <div>
-      <div>Voca List Page! </div>
       <ListComponent fid={fid} />
     </div>
   );
