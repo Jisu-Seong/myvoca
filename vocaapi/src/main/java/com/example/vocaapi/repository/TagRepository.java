@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.example.vocaapi.entity.Tag;
+import com.example.vocaapi.entity.Vocabulary;
 
 @Repository
 public interface TagRepository extends JpaRepository<Tag, Long> {
@@ -20,4 +21,10 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
     @Query(value = "select * from tag where tagname = :tagname", nativeQuery = true)
     Tag findByTagname(String tagname);
 
+    @Query(value = "SELECT tag.tagname " +
+            "FROM tag " +
+            "LEFT JOIN relation ON tag.tid = relation.tid " +
+            "LEFT JOIN vocabulary ON relation.vid = vocabulary.vid " +
+            "WHERE vocabulary.vid = :vid", nativeQuery = true)
+    List<String> getTagList(Long vid);
 }

@@ -34,6 +34,7 @@ const ReadComponent = ({ vid }, { fid }) => {
       {makeDiv("vocaname", voca.vocaname)}
       {makeDiv("meaning", voca.meaning)}
       {makeDiv("sentence", voca.sentence)}
+      {makeDiv("tags", voca.tags)}
       {makeDiv("createdAt", voca.createdAt)}
       {makeDiv("updatedAt", voca.updatedAt)}
 

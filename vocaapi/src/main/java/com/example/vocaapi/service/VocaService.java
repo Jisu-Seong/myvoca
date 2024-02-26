@@ -3,6 +3,7 @@ package com.example.vocaapi.service;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -123,7 +124,10 @@ public class VocaService {
         if (vocabulary != null) {
             Folder folder = vocabulary.getFolder();
             if (folder != null && member.getEmail().equals(folder.getMember().getEmail())) {
-                return VocaResponseDTO.of(vocabulary);
+                List<String> list = tRepository.getTagList(vid);
+                VocaResponseDTO vocaResponseDTO = VocaResponseDTO.of(vocabulary);
+                vocaResponseDTO.setTags(list);
+                return vocaResponseDTO;
             }
         }
         return null;
