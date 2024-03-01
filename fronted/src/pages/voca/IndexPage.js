@@ -5,15 +5,16 @@ import useCustomLogin from "../../hooks/useCustomLogin";
 
 const IndexPage = () => {
   const { fid } = useParams();
+  const { foldername } = useParams();
   const { isLogin, moveToLoginReturn } = useCustomLogin();
   const navigate = useNavigate();
 
   const handleClickList = useCallback(() => {
-    navigate({ pathname: `list/${fid}` });
+    navigate({ pathname: `list/${foldername}` });
   });
 
   const handleClickAdd = useCallback(() => {
-    navigate({ pathname: `add/${fid}` });
+    navigate({ pathname: `add/${foldername}` });
   });
 
   if (!isLogin) {

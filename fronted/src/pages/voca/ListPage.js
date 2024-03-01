@@ -2,11 +2,11 @@ import { useParams } from "react-router-dom";
 import ListComponent from "../../components/voca/ListComponent";
 
 const ListPage = () => {
-  const { fid } = useParams();
+  const { foldername } = useParams();
 
   return (
     <div>
-      <ListComponent fid={fid} />
+      <ListComponent foldername={foldername} />
     </div>
   );
 };

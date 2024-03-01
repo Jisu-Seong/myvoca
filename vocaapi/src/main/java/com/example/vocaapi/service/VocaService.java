@@ -69,21 +69,23 @@ public class VocaService {
 
     // 한 폴더당 보카 리스트
     public PageResponseDTO<VocaResponseDTO> getVocaList(Principal principal,
-            Long fid, String sortname, int page, int size) {
+            String foldername, String sortname, int page, int size) {
         Optional<Member> result = memberRepository.findByEmail(principal.getName());
         Member member = result.orElseThrow();
         Folder folder = null;
-        if (fid == null) {
-            Optional<Folder> result2 = folderRepository.getOneFolderByMember(member.getEmail()).ofNullable(null);
-            folder = result2.orElseGet(null);
+        if (foldername == null) {
+            List<Folder> folderList = folderRepository.findByMember(member.getEmail());
+            if (folderList != null && folderList.size() != 0) {
+                folder = folderList.get(0);
+            }
         } else {
-            folder = folderRepository.getReferenceById(fid);
+            folder = folderRepository.findByFoldername(foldername);
         }
         if (member == folder.getMember()) {
             Sort sort = Sort.by(isASC(sortname) ? Sort.Direction.ASC : Sort.Direction.DESC, sortname);
             Pageable pageable = PageRequest.of(page, size, sort);
 
-            Page<Vocabulary> pages = vRepository.findByFid(fid, pageable);
+            Page<Vocabulary> pages = vRepository.findByFid(folder.getFid(), pageable);
             List<Vocabulary> list = pages.getContent();
             long totalElements = pages.getTotalElements();
             int totalPages = pages.getTotalPages();
@@ -111,6 +113,29 @@ public class VocaService {
             default:
                 return true;
         }
+    }
+
+    // 모든 폴더의 보카 리스트
+    public PageResponseDTO<VocaResponseDTO> getVocaListAll(Principal principal, String sortname, int page, int size) {
+        Optional<Member> result = memberRepository.findByEmail(principal.getName());
+        Member member = result.orElseThrow();
+
+        Sort sort = Sort.by(isASC(sortname) ? Sort.Direction.ASC : Sort.Direction.DESC, sortname);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<Vocabulary> pages = vRepository.findByEmail(member.getEmail(), pageable);
+        List<Vocabulary> list = pages.getContent();
+        long totalElements = pages.getTotalElements();
+        int totalPages = pages.getTotalPages();
+        int currentPage = pages.getNumber();
+
+        List<VocaResponseDTO> resList = list.stream().map(x -> VocaResponseDTO.of(x))
+                .collect(Collectors.toList());
+
+        return new PageResponseDTO<VocaResponseDTO>(resList, totalElements,
+                totalPages,
+                currentPage);
+
     }
 
     // 한 태그에 해당하는 모든 보카 조회

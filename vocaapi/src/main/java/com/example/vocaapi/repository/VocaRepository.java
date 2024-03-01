@@ -31,6 +31,9 @@ public interface VocaRepository extends JpaRepository<Vocabulary, Long> {
     @Query(value = "select * from vocabulary where fid = :fid", nativeQuery = true)
     Page<Vocabulary> findByFid(Long fid, Pageable pageable);
 
+    @Query(value = "select * from vocabulary where email = :email order by updated_At desc", nativeQuery = true)
+    Page<Vocabulary> findByEmail(String email, Pageable pageable);
+
     // 단어 추가
 
     // 단어 수정

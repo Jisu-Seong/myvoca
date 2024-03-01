@@ -41,9 +41,9 @@ const useCustomMove = () => {
     });
   };
 
-  const moveToVocaList = (fid) => {
+  const moveToVocaList = (foldername) => {
     navigate({
-      pathname: `/voca/list/${fid}`,
+      pathname: `/voca/list/${foldername}`,
     });
   };
 

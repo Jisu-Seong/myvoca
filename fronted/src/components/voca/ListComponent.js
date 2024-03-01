@@ -7,17 +7,25 @@ import useCustomLogin from "./../../hooks/useCustomLogin";
 import { getList, getListAll } from "../../api/vocaApi";
 
 const ListComponent = () => {
-  const { fid } = useParams();
+  const { foldername } = useParams();
   const [serverData, setServerData] = useState([]);
   const { moveToList, refresh, moveToVocaRead, moveToVocaList } =
     useCustomMove();
   const { exceptionHandle } = useCustomLogin();
 
   useEffect(() => {
-    if (fid === undefined) {
-      console.log("fid is undefined");
+    if (foldername === undefined || foldername === "undefined") {
+      getListAll()
+        .then((result) => {
+          if (result) {
+            console.log(foldername);
+            console.log(result.data.dtoList);
+            setServerData(result.data.dtoList);
+          }
+        })
+        .catch((err) => exceptionHandle(err));
     } else {
-      getList(fid)
+      getList(foldername)
         .then((result) => {
           if (result) {
             console.log(result.data.dtoList);
@@ -26,18 +34,21 @@ const ListComponent = () => {
         })
         .catch((err) => exceptionHandle(err));
     }
-  }, [refresh]);
+  }, [refresh, foldername]);
 
   return (
     <div className="mx-10 text-3xl">
-      Voca List - folder {fid}
+      Voca List -{" "}
+      {foldername === undefined || foldername === "undefined"
+        ? "all"
+        : foldername}
       <div className="text-xl flex flex-wrap mx-auto justify-centers m-5">
         {serverData ? (
           serverData.map((voca) => (
             <div
               key={voca.vid}
               className="w-full min-w-[400px] p-2 m-2 rounded shadow-md bg-white"
-              onClick={() => moveToVocaRead(voca.vid, voca.fid)}
+              onClick={() => moveToVocaRead(voca.vid, voca.foldername)}
             >
               <div className="flex ">
                 <div className="w-1/2 text-left">

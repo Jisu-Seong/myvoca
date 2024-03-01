@@ -17,9 +17,13 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
 
     Optional<Folder> findByFid(Long fid);
 
-    @Query(value = "select * from folder where folder.email = :email order by fid limit 1", nativeQuery = true)
-    Optional<Folder> getOneFolderByMember(String email);
+    @Query(value = "select * from folder where folder.email = :email limit 1", nativeQuery = true)
+    Folder getOneFolderByMember(String email);
 
     @Query(value = "select * from folder where folder.foldername = :foldername", nativeQuery = true)
-    Optional<Folder> findByFoldername(String foldername);
+    Folder findByFoldername(String foldername);
+
+    @Query(value = "select count(*) from folder where folder.foldername = :foldername", nativeQuery = true)
+    int isExistFoldername(String foldername);
+
 }

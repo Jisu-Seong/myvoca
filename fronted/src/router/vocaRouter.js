@@ -18,7 +18,7 @@ const vocaRouter = () => {
       ),
     },
     {
-      path: "list/:fid",
+      path: "list/:foldername",
       element: (
         <Suspense fallback={Loading}>
           <ListPage />

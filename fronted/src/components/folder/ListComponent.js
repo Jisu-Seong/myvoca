@@ -26,7 +26,7 @@ const ListComponent = () => {
             <div
               key={folder.fid}
               className="w-full min-w-[400px] p-2 m-2 rounded shadow-md  bg-white"
-              onClick={() => moveToVocaList(folder.fid)}
+              onClick={() => moveToVocaList(folder.foldername)}
             >
               <div className="flex  ">
                 <div className="text-1xl m-1 p-2 w-8/12 font-extrabold">

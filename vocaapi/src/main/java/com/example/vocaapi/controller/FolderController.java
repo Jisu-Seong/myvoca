@@ -57,7 +57,10 @@ public class FolderController {
     public Map<String, Long> register(Principal principal,
             @RequestBody FolderRequestDTO folderRequestDTO) {
         Long fid = folderService.createFolder(folderRequestDTO.getFoldername(), principal);
-        return Map.of("FID", fid);
+        if (fid == null) {
+            return Map.of("RESULT", null);
+        } else
+            return Map.of("FID", fid);
     }
 
     @DeleteMapping("/{fid}")

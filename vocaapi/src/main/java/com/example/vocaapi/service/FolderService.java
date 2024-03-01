@@ -28,8 +28,13 @@ public class FolderService {
     public Long createFolder(String foldername, Principal principal) {
         Optional<Member> result = memberRepository.findByEmail(principal.getName());
         Member member = result.orElseThrow();
-        Folder folder = Folder.builder().foldername(foldername).member(member).build();
-        return folderRepository.save(folder).getFid();
+        int count = folderRepository.isExistFoldername(foldername);
+        if (count == 0) {
+            Folder folder = Folder.builder().foldername(foldername).member(member).build();
+            return folderRepository.save(folder).getFid();
+        } else {
+            return null;
+        }
     }
 
     public List<FolderResponseDTO> getFolderBySecurity(Principal principal) {

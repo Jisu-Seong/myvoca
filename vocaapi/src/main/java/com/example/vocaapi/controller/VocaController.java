@@ -35,27 +35,27 @@ import lombok.extern.log4j.Log4j2;
 public class VocaController {
     private final VocaService vocaService;
 
-    @GetMapping("/list/{fid}")
+    @GetMapping("/list/{foldername}")
     public ResponseEntity<PageResponseDTO<VocaResponseDTO>> getVocaAllList(
             Principal principal,
-            @PathVariable(name = "fid") Long fid,
+            @PathVariable(name = "foldername") String foldername,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(name = "sort", defaultValue = "updated_At") String sort) {
-        return new ResponseEntity<>(vocaService.getVocaList(principal, fid, sort,
+        return new ResponseEntity<>(vocaService.getVocaList(principal, foldername, sort,
                 page, size), HttpStatus.OK);
     }
 
-    @GetMapping("/list")
+    @GetMapping("/listall")
     public ResponseEntity<PageResponseDTO<VocaResponseDTO>> getVocaAllFolderList(
             Principal principal,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(name = "sort", defaultValue = "updated_At") String sort) {
-        return new ResponseEntity<>(null);
+        return new ResponseEntity<>(vocaService.getVocaListAll(principal, sort, page, size), HttpStatus.OK);
     }
 
-    @GetMapping("/{vid}")
+    @GetMapping("/get/{vid}")
     public VocaResponseDTO getVocaDetail(
             Principal principal,
             @PathVariable(name = "vid") Long vid) {
@@ -90,7 +90,7 @@ public class VocaController {
         return Map.of("RESULT", "SUCCESS");
     }
 
-    // @DeleteMapping("/{vid}")
+    // @DeleteMapping("/delete/{vid}")
     // public Map<String, String> deleteVoca(
     // Principal principal,
     // @PathVariable(name = "vid") Long vid) {

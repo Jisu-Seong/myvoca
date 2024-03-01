@@ -49,7 +49,7 @@ const ReadComponent = ({ vid }, { fid }) => {
         <button
           type="button"
           className="rounded p-4 m-2 text-xl w-32 text-white bg-orange-500"
-          onClick={() => moveToVocaList(voca.fid)}
+          onClick={() => moveToVocaList(voca.foldername)}
         >
           To Voca List
         </button>

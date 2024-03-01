@@ -41,6 +41,10 @@ public class Vocabulary {
     private boolean delFlag;
 
     @ManyToOne
+    @JoinColumn(name = "email")
+    private Member member;
+
+    @ManyToOne
     @JoinColumn(name = "fid")
     private Folder folder;
 
